@@ -9,6 +9,7 @@ public interface UserLoginService {
 
     Results<List<UserLogin>> finAll();
 
-    Results<UserLogin> save(String userName,String passWord);
+    Results<String> register(UserLogin userLogin);
 
+    Results<String> loginUSer(UserLogin userLogin);
 }

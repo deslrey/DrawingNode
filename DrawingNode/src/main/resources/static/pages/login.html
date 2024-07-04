@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录</title>
+
+    <link rel="stylesheet" href="../css/login.css">
+    <script src="../js/vue.js"></script>
+    <script src="../js/axios-0.18.0.js"></script>
+</head>
+
+<body>
+<div id="app">
+    <form @submit.prevent="login" v-if="!isRegister" id="login_box" class="box active">
+        <h1>登录</h1>
+        <div class="input_box">
+            <input type="text" v-model="loginUsername" placeholder="请输入用户名" autocomplete="username">
+        </div>
+        <div class="input_box">
+            <input type="password" v-model="loginPassword" placeholder="请输入密码" autocomplete="current-password">
+        </div>
+        <button type="submit">登录</button>
+        <br>
+        <div id="login_sign_up">
+            <a @click="showRegister">注册</a>
+        </div>
+    </form>
+
+    <form @submit.prevent="register" v-else id="register_box" class="box active">
+        <h1>注册</h1>
+        <div class="input_box">
+            <input type="text" v-model="registerUsername" placeholder="请输入用户名" autocomplete="username">
+        </div>
+        <div class="input_box">
+            <input type="password" v-model="registerPassword" placeholder="请输入密码" autocomplete="current-password">
+        </div>
+        <button type="submit">注册</button>
+        <br>
+        <div id="register_sign_up">
+            <a @click="showLogin">登录</a>
+        </div>
+    </form>
+
+    <div id="modal" class="modal" v-show="showModalX">
+        <div class="modal-content">
+            <span class="close" @click="closeModal">&times;</span>
+            <p class="modal-message">{{ modalMessage }}</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            isRegister: false,
+            loginUsername: '',
+            loginPassword: '',
+            registerUsername: '',
+            registerPassword: '',
+            showModalX: false,
+            modalMessage: ''
+        },
+        methods: {
+            showRegister() {
+                this.isRegister = true;
+            },
+            showLogin() {
+                this.isRegister = false;
+            },
+            showModal(message) {
+                this.modalMessage = message;
+                this.showModalX = true;
+            },
+            closeModal() {
+                this.showModalX = false;
+            },
+            login() {
+                axios.post('/userLogin/login', {
+                    userName: this.loginUsername,
+                    passWord: this.loginPassword
+                })
+                    .then(response => {
+                        if (response.data.code === 200) {
+                            window.location.href = 'node.html';
+                        } else {
+                            this.showModal('登录失败：' + response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        this.showModal('登录失败：' + error.message);
+                    });
+            },
+            register() {
+                axios.post('/userLogin/register', {
+                    userName: this.registerUsername,
+                    passWord: this.registerPassword
+                })
+                    .then(response => {
+                        if (response.data.code === 200) {
+                            this.showModal('注册成功！');
+                            this.showLogin(); // 注册成功后切换回登录表单
+                        } else {
+                            this.showModal('注册失败：' + response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        this.showModal('注册失败：' + error.message);
+                    });
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

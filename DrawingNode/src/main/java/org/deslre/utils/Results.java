@@ -59,9 +59,13 @@ public class Results<T> {
         return build(data, ResultCodeEnum.FAIL);
     }
 
+    public static <T> Results<T> fail(String message) {
+        return build(null, 500, message);
+    }
+
 
     public static <T> Results<T> fail() {
-        return Results.fail(null,ResultCodeEnum.FAIL);
+        return Results.fail(null, ResultCodeEnum.FAIL);
     }
 
     public static <T> Results<T> fail(T data, ResultCodeEnum resultCodeEnum) {

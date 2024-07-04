@@ -1,0 +1,111 @@
+body {
+    background: url('../img/login.jpg') no-repeat;
+    background-size: 100% 130%;
+    font-family: Arial, sans-serif;
+}
+
+#login_box, #register_box {
+    width: 300px;
+    height: 400px;
+    background-color: rgba(0, 0, 0, 0.6);
+    margin: auto;
+    margin-top: 10%;
+    text-align: center;
+    border-radius: 10px;
+    padding: 50px 30px;
+    display: none;
+}
+
+#login_box.active, #register_box.active {
+    display: block;
+}
+
+h1 {
+    color: #ffffff90;
+    margin-top: 5%;
+}
+
+.input_box {
+    margin-top: 20px;
+}
+
+span {
+    color: #fff;
+}
+
+input {
+    border: 0;
+    width: 80%;
+    font-size: 15px;
+    color: #fff;
+    background: transparent;
+    border-bottom: 2px solid #fff;
+    padding: 10px;
+    outline: none;
+    margin-top: 10px;
+}
+
+button {
+    margin-top: 30px;
+    width: 80%;
+    height: 40px;
+    border-radius: 20px;
+    border: 0;
+    color: #fff;
+    text-align: center;
+    line-height: 40px;
+    font-size: 15px;
+    background-image: linear-gradient(to right, #30cfd0, #330867);
+    cursor: pointer;
+}
+
+#login_sign_up, #register_sign_up {
+    margin-top: 20px;
+}
+
+a {
+    color: #b94648;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-message {
+    font-size: 18px;
+    margin: 20px 0;
+}
