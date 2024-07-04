@@ -26,6 +26,7 @@
         <div id="login_sign_up">
             <a @click="showRegister">注册</a>
         </div>
+        <h1 v-if="showModalX">{{modalMessage}}</h1>
     </form>
 
     <form @submit.prevent="register" v-else id="register_box" class="box active">
@@ -38,17 +39,11 @@
         </div>
         <button type="submit">注册</button>
         <br>
+        <h1 v-if="showModalX">{{modalMessage}}</h1>
         <div id="register_sign_up">
             <a @click="showLogin">登录</a>
         </div>
     </form>
-
-    <div id="modal" class="modal" v-show="showModalX">
-        <div class="modal-content">
-            <span class="close" @click="closeModal">&times;</span>
-            <p class="modal-message">{{ modalMessage }}</p>
-        </div>
-    </div>
 </div>
 
 
@@ -74,9 +69,9 @@
             showModal(message) {
                 this.modalMessage = message;
                 this.showModalX = true;
-            },
-            closeModal() {
-                this.showModalX = false;
+                setTimeout(() => {
+                    this.showModalX = false
+                }, 3000)
             },
             login() {
                 axios.post('/userLogin/login', {
