@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: DrawingNode
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/test?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 200381
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  neo4j:
+    uri: bolt://192.168.1.26:7687
+    authentication:
+      username: neo4j
+      password: 200381
+
+server:
+  port: 81
