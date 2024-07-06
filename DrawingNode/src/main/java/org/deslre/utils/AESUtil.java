@@ -28,13 +28,13 @@ public class AESUtil {
     }
 
     public static void main(String[] args) throws Exception {
-//        String str = "张三";
-//        String encrypt = encrypt(str);
-//        System.out.println("encrypt = " + encrypt);
-
-        String str = "EAraCMKwITgaHw0L6L430g==";
-        String encrypt = decrypt(str);
+        String str = "张三";
+        String encrypt = encrypt(str);
         System.out.println("encrypt = " + encrypt);
+
+//        String str = "EAraCMKwITgaHw0L6L430g==";
+//        String encrypt = decrypt(str);
+//        System.out.println("encrypt = " + encrypt);
 
     }
 

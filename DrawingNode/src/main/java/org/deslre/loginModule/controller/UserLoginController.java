@@ -1,7 +1,7 @@
 package org.deslre.loginModule.controller;
 
 
-import org.deslre.loginModule.entity.UserLogin;
+import org.deslre.loginModule.entity.UserLoginEntity;
 import org.deslre.loginModule.service.UserLoginService;
 import org.deslre.utils.Results;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,15 +27,15 @@ public class UserLoginController {
     private UserLoginService userLoginService;
 
     @PostMapping("/login")
-    public Results<String> loginUser(@RequestBody UserLogin userLogin) {
-        System.out.println("userLogin = " + userLogin);
-        return userLoginService.loginUSer(userLogin);
+    public Results<String> loginUser(@RequestBody UserLoginEntity userLoginEntity) {
+        System.out.println("userLogin = " + userLoginEntity);
+        return userLoginService.loginUSer(userLoginEntity);
     }
 
     @PostMapping("/register")
-    public Results<String> register(@RequestBody UserLogin userLogin) {
-        System.out.println("userLogin = " + userLogin);
-        return userLoginService.register(userLogin);
+    public Results<String> register(@RequestBody UserLoginEntity userLoginEntity) {
+        System.out.println("userLogin = " + userLoginEntity);
+        return userLoginService.register(userLoginEntity);
     }
 
 }

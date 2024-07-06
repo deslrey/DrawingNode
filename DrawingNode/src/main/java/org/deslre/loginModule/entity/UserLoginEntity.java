@@ -8,10 +8,10 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 @Entity
+@RequiredArgsConstructor
 @Table(name = "user_login", schema = "test", catalog = "")
-public class UserLogin {
+public class UserLoginEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -31,7 +31,7 @@ public class UserLogin {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserLogin that = (UserLogin) o;
+        UserLoginEntity that = (UserLoginEntity) o;
         return id == that.id && Objects.equals(userName, that.userName) && Objects.equals(passWord, that.passWord) && Objects.equals(exist, that.exist);
     }
 

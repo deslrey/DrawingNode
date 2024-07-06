@@ -1,10 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
+
 <head>
     <meta charset="UTF-8">
-    <title>节点展示</title>
+    <title>关系图案例</title>
+    <!-- 引入 ECharts 和 Vue 文件 -->
+    <script src="../js/echarts.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/vue.js"></script>
+    <script src="../js/axios-0.18.0.js"></script>
+    <link rel="stylesheet" href="../css/node.css">
 </head>
+
 <body>
-<h1>Node</h1>
+<div id="app" class="root">
+    <!--    <h1 v-if="chartData == null">当前暂无数据</h1>-->
+    <!-- 为 ECharts 准备一个具备大小（宽高）的 容器 -->
+    <div id="chart1">
+        <!--        <button @click="fetchChartData">点击请求数据</button>-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    const vm = new Vue({
+        el: '#app',
+        data: {
+            chartData: null,
+            categories: null
+        },
+        mounted() {
+            this.fetchChartData();
+        },
+        methods: {
+            fetchChartData() {
+                axios.get('/chart/data')
+                    .then(response => {
+                        console.log('请求成功 = ', response)
+                        const data = response.data.data;
+                        this.chartData = data[0];
+                        this.links = data[1];
+                        this.categories = data[2];
+                        this.initChart();
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the chart data!", error);
+                    });
+            },
+            initChart() {
+                if (!this.chartData || !this.categories) return;
+
+                var chart1 = echarts.init(document.getElementById('chart1'));
+
+                var option = {
+                    backgroundColor: '#ccc',
+                    title: {
+                        text: "收入支出分析",
+                        left: '3%',
+                        top: '3%',
+                        textStyle: {
+                            color: '#000',
+                            fontSize: '30',
+                        }
+                    },
+                    tooltip: {
+                        formatter: function (param) {
+                            if (param.dataType === 'edge') {
+                                return param.data.target;
+                            }
+                            return param.data.name;
+                        }
+                    },
+                    series: [{
+                        edgeSymbol: ['none', 'arrow'],
+                        type: "graph",
+                        top: '10%',
+                        roam: true,
+                        focusNodeAdjacency: true,
+                        force: {
+                            repulsion: 1000,
+                            edgeLength: 200
+                        },
+                        layout: "force",
+                        symbol: ['circle'],
+                        lineStyle: {
+                            normal: {
+                                color: '#000',
+                                width: 1,
+                                type: 'solid',
+                                opacity: 0.5,
+                                curveness: 0
+                            }
+                        },
+                        label: {
+                            normal: {
+                                show: true,
+                                position: "inside",
+                                textStyle: {
+                                    fontSize: 16
+                                }
+                            }
+                        },
+                        edgeLabel: {
+                            normal: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: 14
+                                },
+                                formatter: function (param) {
+                                    return param.data.category;
+                                }
+                            }
+                        },
+                        data: this.chartData,
+                        categories: this.categories,
+                        links: this.links
+                    }],
+                    animationEasingUpdate: "quinticInOut",
+                    animationDurationUpdate: 100
+                };
+
+                chart1.setOption(option);
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -7,6 +7,15 @@ public class StringUtil {
         return str == null || str.length() == 0;
     }
 
+    public static <T> boolean isEmpty(final Class<T> clazz) {
+        return clazz == null;
+    }
+
+    public static <T> boolean isEmpty(final T clazz) {
+        return clazz == null;
+    }
+
+
     public static boolean isNotEmpty(final CharSequence str) {
         return !isEmpty(str);
     }
