@@ -14,7 +14,7 @@ import java.util.Objects;
 @Entity
 @RequiredArgsConstructor
 @Table(name = "thirdly_node", schema = "test", catalog = "")
-public class ThirdlyNodeEnyity {
+public class ThirdlyNodeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -36,7 +36,7 @@ public class ThirdlyNodeEnyity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ThirdlyNodeEnyity that = (ThirdlyNodeEnyity) o;
+        ThirdlyNodeEntity that = (ThirdlyNodeEntity) o;
         return id == that.id && Objects.equals(name, that.name) && Objects.equals(identity, that.identity) && Objects.equals(level, that.level) && Objects.equals(exits, that.exits);
     }
 

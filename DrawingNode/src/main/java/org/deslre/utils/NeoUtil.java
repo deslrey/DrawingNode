@@ -7,10 +7,16 @@ import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Session;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Map;
+
+import static org.deslre.utils.StringUtil.isEmpty;
 
 @Slf4j
+@Component
 public class NeoUtil {
 
 
@@ -25,10 +31,28 @@ public class NeoUtil {
         session = driver.session();
     }
 
+
+    public <T> Results<String> addSingleNode(T premise) {
+        if (isEmpty(premise)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
+
+        String clause = buildClause(premise);
+        String title = getLevel(premise);
+        try {
+            String cql = "MERGE (:`" + title + "`{" + clause + "})";
+            log.info("cql = {}", cql);
+            session.run(cql);
+        } catch (Exception e) {
+            return Results.fail(e.getMessage());
+        }
+        return Results.ok();
+    }
+
     /**
      * 删除所有数据
      */
-    public static void DeleteAll() {
+    public void deleteAll() {
         try {
             String cql = "match (n) detach delete n";
             session.run(cql);
@@ -98,10 +122,49 @@ public class NeoUtil {
         return whereClause.toString();
     }
 
-
-    public static void main(String[] args) {
-        DeleteAll();
+    private static <T> String getLevel(T type) {
+        Field[] fields = type.getClass().getDeclaredFields();
+        String fieldName = "";
+        for (Field field : fields) {
+            field.setAccessible(true);
+            fieldName = field.getName();
+            if ("level".equals(fieldName)) {
+                try {
+                    fieldName = (String) field.get(type);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return fieldName;
     }
+
+
+    public static <T> void print(T t) {
+        System.err.println(t);
+    }
+
+    public static <T, R> void print(T t, R r) {
+        System.err.println(t + " = " + r);
+    }
+
+    public static <R> void print(Collection<? extends R> list) {
+        if (isEmpty(list)) {
+            print("传入的lis为空");
+            return;
+        }
+        list.forEach(NeoUtil::print);
+    }
+
+    public static <K, V> void print(Map<? extends K, ? extends V> map) {
+        if (isEmpty(map)) {
+            print("传入的map为空");
+            return;
+        }
+        map.forEach(NeoUtil::print);
+    }
+
 
 }
 

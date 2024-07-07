@@ -36,6 +36,5 @@ class AppTests {
 
     @Test
     void delete() {
-        NeoUtil.DeleteAll();
     }
 }

@@ -1,9 +1,6 @@
 package org.deslre.nodeModule.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -13,8 +10,8 @@ import java.util.Objects;
 @ToString
 @Entity
 @RequiredArgsConstructor
-@Table(name = "second_node", schema = "test", catalog = "")
-public class SecondNodeEnyity {
+@Table(name = "first_node", schema = "test", catalog = "")
+public class FirstNodeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -22,6 +19,9 @@ public class SecondNodeEnyity {
     @Basic
     @Column(name = "name")
     private String name;
+    @Basic
+    @Column(name = "card_id")
+    private String cardId;
     @Basic
     @Column(name = "identity")
     private String identity;
@@ -37,12 +37,12 @@ public class SecondNodeEnyity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SecondNodeEnyity that = (SecondNodeEnyity) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(identity, that.identity) && Objects.equals(level, that.level) && Objects.equals(exits, that.exits);
+        FirstNodeEntity that = (FirstNodeEntity) o;
+        return id == that.id && Objects.equals(name, that.name) && Objects.equals(cardId, that.cardId) && Objects.equals(identity, that.identity) && Objects.equals(level, that.level) && Objects.equals(exits, that.exits);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, identity, level, exits);
+        return Objects.hash(id, name, cardId, identity, level, exits);
     }
 }

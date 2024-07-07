@@ -14,7 +14,7 @@ import java.util.Objects;
 @Entity
 @RequiredArgsConstructor
 @Table(name = "relation", schema = "test", catalog = "")
-public class RelationEnyity {
+public class RelationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -45,7 +45,7 @@ public class RelationEnyity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RelationEnyity that = (RelationEnyity) o;
+        RelationEntity that = (RelationEntity) o;
         return id == that.id && Objects.equals(headNodeId, that.headNodeId) && Objects.equals(headLevel, that.headLevel) && Objects.equals(information, that.information) && Objects.equals(caseNumber, that.caseNumber) && Objects.equals(tailNodeId, that.tailNodeId) && Objects.equals(tailLevel, that.tailLevel) && Objects.equals(exits, that.exits);
     }
 
