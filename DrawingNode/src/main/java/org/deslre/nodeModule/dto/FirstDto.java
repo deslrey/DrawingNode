@@ -12,6 +12,7 @@ public class FirstDto {
      * 名称
      */
     private String name;
+    private String cardId;
 
     /**
      * 信息

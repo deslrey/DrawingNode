@@ -1,5 +1,6 @@
 package org.deslre.utils;
 
+import org.deslre.nodeModule.dto.FirstDto;
 import org.deslre.nodeModule.entity.FirstNodeEntity;
 import org.deslre.nodeModule.repository.FirstNodeRepository;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,10 @@ class NeoUtilTest {
 
     @Test
     void deleteAll() {
-        neoUtil.deleteAll();
+        List<FirstNodeEntity> entityList = firstNodeRepository.findAll();
+        entityList.forEach(node -> {
+            FirstDto firstDto = firstNodeRepository.searchNode(node.getId());
+            System.out.println("firstDto = " + firstDto);
+        });
     }
 }

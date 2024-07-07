@@ -1,5 +1,6 @@
 package org.deslre.utils;
 
+import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.deslre.config.NeoDatabaseConfig;
 import org.deslre.handler.SpringContextHandler;
@@ -61,6 +62,37 @@ public class NeoUtil {
             log.error("全部删除失败: {}", e.getMessage());
         }
     }
+
+    public static <T, U> U convert(T source, Class<U> targetClass) {
+        U target = null;
+        try {
+            target = targetClass.getDeclaredConstructor().newInstance();
+            target = BeanUtil.toBean(source, targetClass);
+            Field[] sourceFields = source.getClass().getDeclaredFields();
+            Field[] targetFields = targetClass.getDeclaredFields();
+
+            for (Field targetField : targetFields) {
+                targetField.setAccessible(true);
+                if (targetField.getName().equals("nodeId")) {
+                    for (Field sourceField : sourceFields) {
+                        sourceField.setAccessible(true);
+                        if (sourceField.getName().equals("id")) {
+                            targetField.set(target, sourceField.get(source));
+                            break;
+                        }
+                    }
+                } else if (targetField.getName().equals("id")) {
+                    targetField.setAccessible(true);
+                    targetField.set(target, null);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return target;
+    }
+
 
     private static <T> String buildClause(T entity) {
         Class<?> clazz = entity.getClass();
