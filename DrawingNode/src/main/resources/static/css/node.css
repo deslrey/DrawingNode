@@ -67,6 +67,11 @@ html, body {
     background-color: #45a049;
 }
 
+.nav-select {
+    padding: 5px;
+    font-size: 16px;
+}
+
 #chart1 {
     width: 100%;
     height: calc(100% - 70px); /* Adjust the height to leave space for the navbar */

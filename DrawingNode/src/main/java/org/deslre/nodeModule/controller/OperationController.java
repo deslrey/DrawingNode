@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
+import java.util.List;
+
 import static org.deslre.utils.StringUtil.isEmpty;
 
 @RestController
@@ -24,9 +26,12 @@ public class OperationController {
         if (isEmpty(caseNumber)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
-        System.out.println("this = " + this);
-        return Results.ok();
-//        return relationService.addAllCorrespondingCases(caseNumber);
+        return relationService.addAllCorrespondingCases(caseNumber);
+    }
+
+    @GetMapping("/allCase")
+    public Results<List<String>> getAllCaseNumbers() {
+        return relationService.getAllCaseNumbers();
     }
 
 

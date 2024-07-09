@@ -20,7 +20,13 @@
             <li><a href="#">联系</a></li>
             <li>
                 <input type="text" placeholder="输入内容" class="nav-input" v-model="caseNumber">
-                <button class="nav-button" @click="fetchDataByCase">提交</button>
+                <button class="nav-button" @click="fetchDataByInput">提交</button>
+            </li>
+            <li>
+                <select v-model="selectedCaseNumber" class="nav-select">
+                    <option v-for="caseNum in caseNumbers" :key="caseNum" :value="caseNum">{{ caseNum }}</option>
+                </select>
+                <button class="nav-button" @click="fetchDataByDropdown">查询</button>
             </li>
         </ul>
     </nav>
@@ -35,10 +41,13 @@
         data: {
             chartData: null,
             categories: null,
-            caseNumber: ''
+            caseNumber: '',
+            caseNumbers: [],
+            selectedCaseNumber: ''
         },
         mounted() {
             this.fetchChartData();
+            this.fetchAllCaseNumbers();
         },
         methods: {
             fetchChartData() {
@@ -55,12 +64,40 @@
                         console.error("There was an error fetching the chart data!", error);
                     });
             },
-            fetchDataByCase() {
+            fetchAllCaseNumbers() {
+                axios.get('/operation/allCase')
+                    .then(response => {
+                        console.log('请求成功 = ', response)
+                        this.caseNumbers = response.data.data;
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the case numbers!", error);
+                    });
+            },
+            fetchDataByInput() {
                 if (!this.caseNumber) {
                     alert('请输入案件号');
                     return;
                 }
                 axios.get(`/operation/inquire/${this.caseNumber}`)
+                    .then(response => {
+                        console.log('请求成功 = ', response)
+                        const data = response.data.data;
+                        this.chartData = data[0];
+                        this.links = data[1];
+                        this.categories = data[2];
+                        this.initChart();
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the data!", error);
+                    });
+            },
+            fetchDataByDropdown() {
+                if (!this.selectedCaseNumber) {
+                    alert('请选择一个案件号');
+                    return;
+                }
+                axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
                     .then(response => {
                         console.log('请求成功 = ', response)
                         const data = response.data.data;

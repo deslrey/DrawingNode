@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.deslre.utils.StringUtil.isEmpty;
 
@@ -67,6 +65,15 @@ public class RelationServiceImpl implements RelationService {
         return Results.ok("添加完成");
     }
 
+    @Override
+    public Results<List<String>> getAllCaseNumbers() {
+        List<String> list = new ArrayList<>(15);
+        updateCaseMap();
+        Set<String> keySet = caseAllMap.keySet();
+        list.addAll(keySet);
+        return Results.ok(list);
+    }
+
 
     private void earlyInitialization() {
         List<CaseTableEntity> list = caseTableRepository.findAll();
@@ -76,7 +83,7 @@ public class RelationServiceImpl implements RelationService {
         log.info("编号更新完成");
     }
 
-    public void updateCaseMap() {
+    private void updateCaseMap() {
         caseAllMap.clear();
         earlyInitialization();
     }
