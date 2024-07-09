@@ -13,10 +13,19 @@
 
 <body>
 <div id="app" class="root">
-    <!--    <h1 v-if="chartData == null">当前暂无数据</h1>-->
-    <!-- 为 ECharts 准备一个具备大小（宽高）的 容器 -->
+    <nav class="navbar">
+        <ul>
+            <li><a href="#">首页</a></li>
+            <li><a href="#">关于</a></li>
+            <li><a href="#">联系</a></li>
+            <li>
+                <input type="text" placeholder="输入内容" class="nav-input" v-model="caseNumber">
+                <button class="nav-button" @click="fetchDataByCase">提交</button>
+            </li>
+        </ul>
+    </nav>
     <div id="chart1">
-        <!--        <button @click="fetchChartData">点击请求数据</button>-->
+        <!-- <button @click="fetchChartData">点击请求数据</button> -->
     </div>
 </div>
 
@@ -25,7 +34,8 @@
         el: '#app',
         data: {
             chartData: null,
-            categories: null
+            categories: null,
+            caseNumber: ''
         },
         mounted() {
             this.fetchChartData();
@@ -43,6 +53,24 @@
                     })
                     .catch(error => {
                         console.error("There was an error fetching the chart data!", error);
+                    });
+            },
+            fetchDataByCase() {
+                if (!this.caseNumber) {
+                    alert('请输入案件号');
+                    return;
+                }
+                axios.get(`/operation/inquire/${this.caseNumber}`)
+                    .then(response => {
+                        console.log('请求成功 = ', response)
+                        const data = response.data.data;
+                        this.chartData = data[0];
+                        this.links = data[1];
+                        this.categories = data[2];
+                        this.initChart();
+                    })
+                    .catch(error => {
+                        console.error("There was an error fetching the data!", error);
                     });
             },
             initChart() {

@@ -24,7 +24,9 @@ public class OperationController {
         if (isEmpty(caseNumber)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
-        return relationService.addAllCorrespondingCases(caseNumber);
+        System.out.println("this = " + this);
+        return Results.ok();
+//        return relationService.addAllCorrespondingCases(caseNumber);
     }
 
 
