@@ -27,10 +27,6 @@ class NeoUtilTest {
 
     @Test
     void deleteAll() {
-        List<FirstNodeEntity> entityList = firstNodeRepository.findAll();
-        entityList.forEach(node -> {
-            FirstDto firstDto = firstNodeRepository.searchNode(node.getId());
-            System.out.println("firstDto = " + firstDto);
-        });
+        neoUtil.deleteAll();
     }
 }
