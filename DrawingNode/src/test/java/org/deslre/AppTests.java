@@ -4,6 +4,7 @@ import org.deslre.loginModule.repository.UserLoginRepository;
 import org.deslre.nodeModule.dto.ResultDto;
 import org.deslre.nodeModule.entity.RelationEntity;
 import org.deslre.nodeModule.repository.RelationRepository;
+import org.deslre.nodeModule.vo.RelationVo;
 import org.deslre.utils.ExtraUtil;
 import org.deslre.utils.NeoUtil;
 import org.junit.jupiter.api.Test;
@@ -40,11 +41,18 @@ class AppTests {
     @Test
     void findAll() {
         List<RelationEntity> list = relationRepository.findAll();
+        RelationVo s = new RelationVo();
         for (RelationEntity relation : list) {
             ResultDto startNode = extraUtil.switchChoose(relation.getHeadLevel(), relation.getHeadNodeId());
             ResultDto endNode = extraUtil.switchChoose(relation.getTailLevel(), relation.getTailNodeId());
-            neoUtil.addSingleNode(startNode);
-            neoUtil.addSingleNode(endNode);
+            s.setTitle(relation.getCaseNumber());
+            s.setName(relation.getInformation());
+            neoUtil.addCaseRelationships(startNode, s, endNode);
         }
+    }
+
+    @Test
+    void delete() {
+        neoUtil.deleteAll();
     }
 }

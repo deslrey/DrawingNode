@@ -18,6 +18,10 @@ class NeoUtilTest {
     @Resource
     private FirstNodeRepository firstNodeRepository;
 
+    @Test
+    void addANumberToAllRelationships() {
+
+    }
 
     @Test
     void addSingleNode() {

@@ -6,5 +6,6 @@ import lombok.Data;
 public class RelationVo {
 
     private String name;
+    private String title;
 
 }

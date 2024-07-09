@@ -39,7 +39,7 @@ public class NeoUtil {
         }
 
         String clause = buildClause(premise);
-        String title = getLevel(premise);
+        String title = getField(premise, FinalUtil.LEVEL);
         try {
             String cql = "MERGE (:`" + title + "`{" + clause + "})";
             log.info("cql = {}", cql);
@@ -49,6 +49,29 @@ public class NeoUtil {
         }
         return Results.ok();
     }
+
+    public <R, S> Results<R> addCaseRelationships(R StartNode, S Relation, R EndNode) {
+        if (isEmpty(StartNode) || isEmpty(Relation) || isEmpty(EndNode)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
+
+        String startNode = buildClause(StartNode);
+        String relation = buildClause(Relation);
+        String endNode = buildClause(EndNode);
+        String StartLevel = getField(StartNode, FinalUtil.LEVEL);
+        String EndLevel = getField(EndNode, FinalUtil.LEVEL);
+        String title = getField(Relation, FinalUtil.TITLE);
+        try {
+            String cql = "MERGE  (a:`" + StartLevel + "`{" + startNode + "}) MERGE  (b:`" + EndLevel + "`{" + endNode + "}) MERGE  (a) - [:`" + title + "`{" + relation + "}] -> (b)";
+            log.info("cql = {}", cql);
+            session.run(cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Results.ok();
+    }
+
 
     /**
      * 删除所有数据
@@ -102,6 +125,8 @@ public class NeoUtil {
         for (Field field : fields) {
             // 排除静态字段
             if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                if (field.getName().equals(FinalUtil.TITLE))
+                    continue;
                 field.setAccessible(true); // 设置字段可访问
                 try {
                     Object value = field.get(entity);
@@ -154,22 +179,22 @@ public class NeoUtil {
         return whereClause.toString();
     }
 
-    private static <T> String getLevel(T type) {
+    private static <T> String getField(T type, String fieldName) {
         Field[] fields = type.getClass().getDeclaredFields();
-        String fieldName = "";
+        String name = "";
         for (Field field : fields) {
             field.setAccessible(true);
-            fieldName = field.getName();
-            if ("level".equals(fieldName)) {
+            name = field.getName();
+            if (fieldName.equals(name)) {
                 try {
-                    fieldName = (String) field.get(type);
+                    name = (String) field.get(type);
                     break;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-        return fieldName;
+        return name;
     }
 
 

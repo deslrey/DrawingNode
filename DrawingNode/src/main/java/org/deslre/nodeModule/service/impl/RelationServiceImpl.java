@@ -7,6 +7,7 @@ import org.deslre.nodeModule.entity.RelationEntity;
 import org.deslre.nodeModule.repository.CaseTableRepository;
 import org.deslre.nodeModule.repository.RelationRepository;
 import org.deslre.nodeModule.service.RelationService;
+import org.deslre.nodeModule.vo.RelationVo;
 import org.deslre.utils.ExtraUtil;
 import org.deslre.utils.NeoUtil;
 import org.deslre.utils.ResultCodeEnum;
@@ -54,11 +55,13 @@ public class RelationServiceImpl implements RelationService {
         List<RelationEntity> list = relationRepository.findAllByCaseNumber(caseNumber);
         ResultDto startNode;
         ResultDto endNode;
+        RelationVo relationVo = new RelationVo();
         for (RelationEntity relation : list) {
             startNode = extraUtil.switchChoose(relation.getHeadLevel(), relation.getHeadNodeId());
             endNode = extraUtil.switchChoose(relation.getTailLevel(), relation.getTailNodeId());
-            neoUtil.addSingleNode(startNode);
-            neoUtil.addSingleNode(endNode);
+            relationVo.setTitle(relation.getCaseNumber());
+            relationVo.setName(relation.getInformation());
+            neoUtil.addCaseRelationships(startNode, relationVo, endNode);
         }
 
         return Results.ok("添加完成");
