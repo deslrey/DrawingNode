@@ -1,51 +1,127 @@
 package org.deslre;
 
-import org.deslre.nodeModule.vo.RelationVo;
-import org.deslre.utils.FinalUtil;
+import org.deslre.nodeModule.chartNode.ChartCategory;
+import org.deslre.nodeModule.chartNode.ChartDataResponse;
+import org.deslre.nodeModule.chartNode.ChartLink;
+import org.deslre.nodeModule.chartNode.ChartNode;
+import org.deslre.nodeModule.dto.ResultDto;
+import org.deslre.nodeModule.vo.RelationshipNode;
+import org.deslre.utils.NeoUtil;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.lang.reflect.Field;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import static org.deslre.utils.StringUtil.isEmpty;
+
+@SpringBootTest
 public class demoTest {
 
+    @Resource
+    private NeoUtil neoUtil;
+
     @Test
-    void getField() {
-        RelationVo relationVo = new RelationVo();
-        relationVo.setName("李四");
-        relationVo.setTitle("张三");
-        String clause = buildClause(relationVo);
-        System.out.println("clause = " + clause);
+    void testOne() {
+        List<RelationshipNode> nodeList = neoUtil.getAllRelationships("2021").getData();
+        List<ChartNode> nodes = generateNodes(nodeList);
+        List<ChartLink> links = generateLinks(nodeList);
+        List<ChartCategory> categories = generateCategories(nodeList);
+
+        ChartDataResponse chartData = new ChartDataResponse();
+        chartData.setNodes(nodes);
+        chartData.setLinks(links);
+        chartData.setCategories(categories);
+
+        System.out.println("chartData = " + chartData);
+
     }
 
-    private static <T> String buildClause(T entity) {
-        Class<?> clazz = entity.getClass();
-        StringBuilder whereClause = new StringBuilder();
-        // 获取实体类的所有字段
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field field : fields) {
-            // 排除静态字段
-            if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                if (field.getName().equals(FinalUtil.TITLE))
-                    continue;
-                field.setAccessible(true); // 设置字段可访问
-                try {
-                    Object value = field.get(entity);
-                    if (value != null) {
-                        if (field.getType() == String.class) {
-                            whereClause.append(field.getName()).append(" : '").append(value).append("' , ");
-                        } else {
-                            whereClause.append(field.getName()).append(" : ").append(value).append(" , ");
-                        }
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        // 移除最后一个AND
-        if (whereClause.length() > 0) {
-            whereClause.setLength(whereClause.length() - 3);
-        }
-        return whereClause.toString();
+    private List<ChartCategory> generateCategories(List<RelationshipNode> nodeList) {
+        List<ChartCategory> categoryList = new ArrayList<>();
+
+        categoryList.add(new ChartCategory("一级"));
+        categoryList.add(new ChartCategory("二级"));
+        categoryList.add(new ChartCategory("三级"));
+        categoryList.add(new ChartCategory("四级"));
+
+        return categoryList;
     }
+
+    private List<ChartLink> generateLinks(List<RelationshipNode> nodeList) {
+        List<ChartLink> chartLinkList = new ArrayList<>(nodeList.size());
+        ChartLink chartLink;
+        for (RelationshipNode node : nodeList) {
+            chartLink = new ChartLink();
+            setRelaList(node, chartLink);
+            chartLinkList.add(chartLink);
+        }
+        return chartLinkList;
+    }
+
+    private List<ChartNode> generateNodes(List<RelationshipNode> nodeList) {
+        Set<ChartNode> chartNodeSet = new HashSet<>(nodeList.size());
+        for (RelationshipNode node : nodeList) {
+            setRelaList(node, chartNodeSet);
+        }
+
+        return new ArrayList<>(chartNodeSet);
+    }
+
+    private void setRelaList(RelationshipNode node, ChartLink chartLink) {
+        String startNode = node.getStartNode();
+        String endNode = node.getEndNode();
+        ResultDto startPro = NeoUtil.parseProduct(startNode);
+        ResultDto endPro = NeoUtil.parseProduct(endNode);
+        chartLink.setSource(startPro.getName());
+        chartLink.setDes(NeoUtil.getValueFromJsonString(node.getRelationship()));
+        chartLink.setTarget(endPro.getName());
+        chartLink.setName(NeoUtil.getValueFromJsonString(node.getRelationship()));
+    }
+
+    private void setRelaList(RelationshipNode node, Set<ChartNode> chartNodeSet) {
+        String startNode = node.getStartNode();
+        String endNode = node.getEndNode();
+        ResultDto startPro = NeoUtil.parseProduct(startNode);
+        ResultDto endPro = NeoUtil.parseProduct(endNode);
+        ChartNode startCharNode = new ChartNode();
+        ChartNode endCharNode = new ChartNode();
+        startCharNode.setName(startPro.getName());
+        startCharNode.setDes(startPro.getIdentity());
+        startCharNode.setCategory(selectionLevel(startPro.getLevel()));
+        startCharNode.setSymbolSize(selectionSize(startPro.getLevel()));
+
+        endCharNode.setName(endPro.getName());
+        endCharNode.setDes(endPro.getIdentity());
+        endCharNode.setCategory(selectionLevel(endPro.getLevel()));
+        endCharNode.setSymbolSize(selectionSize(endPro.getLevel()));
+        chartNodeSet.add(startCharNode);
+        chartNodeSet.add(endCharNode);
+    }
+
+
+    private Integer selectionLevel(String str) {
+        return switch (str) {
+            case "一级" -> 1;
+            case "二级" -> 2;
+            case "三级" -> 3;
+            case "四级" -> 4;
+            default -> 0;
+        };
+    }
+
+    private Integer selectionSize(String str) {
+        return switch (str) {
+            case "一级" -> 70;
+            case "二级" -> 65;
+            case "三级" -> 60;
+            case "四级" -> 55;
+            default -> 50;
+        };
+    }
+
+
 }

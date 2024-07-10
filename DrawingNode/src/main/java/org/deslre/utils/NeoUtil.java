@@ -1,9 +1,11 @@
 package org.deslre.utils;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.deslre.config.NeoDatabaseConfig;
 import org.deslre.handler.SpringContextHandler;
+import org.deslre.nodeModule.dto.ResultDto;
 import org.deslre.nodeModule.vo.RelationshipNode;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.deslre.utils.StringUtil.isEmpty;
 
@@ -236,6 +240,23 @@ public class NeoUtil {
         return name;
     }
 
+    public static String getValueFromJsonString(String jsonString) {
+        Pattern pattern = Pattern.compile("=(.*?)}");
+        Matcher matcher = pattern.matcher(jsonString);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    public static ResultDto parseProduct(String jsonString) {
+        JSONObject jsonObject = new JSONObject(true);
+        for (String entry : jsonString.substring(1, jsonString.length() - 1).split(", ")) {
+            String[] keyValue = entry.split("=");
+            jsonObject.put(keyValue[0], keyValue[1]);
+        }
+        return jsonObject.toJavaObject(ResultDto.class);
+    }
 
     public static <T> void print(T t) {
         System.err.println(t);

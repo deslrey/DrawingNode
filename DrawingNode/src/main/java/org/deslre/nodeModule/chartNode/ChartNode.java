@@ -10,6 +10,7 @@ public class ChartNode {
     private String des;
     private Integer symbolSize;
     private Integer category;
+    private ItemStyle itemStyle;
 
     public ChartNode() {
     }

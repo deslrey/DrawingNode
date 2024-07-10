@@ -11,6 +11,7 @@ public class ChartLink {
     private String name;
     private String des;
     private String[] symbol;  // 符号数组，可选字段
+    private LineStyle lineStyle;
 
     public ChartLink() {
     }
