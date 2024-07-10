@@ -26,7 +26,9 @@ public class OperationController {
         if (isEmpty(caseNumber)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
-        return relationService.addAllCorrespondingCases(caseNumber);
+        System.out.println("caseNumber = " + caseNumber);
+        return Results.ok();
+//        return relationService.addAllCorrespondingCases(caseNumber);
     }
 
     @GetMapping("/allCase")

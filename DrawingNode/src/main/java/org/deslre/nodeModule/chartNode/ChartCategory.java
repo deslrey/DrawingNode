@@ -7,4 +7,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChartCategory {
     private String name;
+
+    public ChartCategory() {
+    }
 }

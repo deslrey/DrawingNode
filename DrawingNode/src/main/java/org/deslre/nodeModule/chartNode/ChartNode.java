@@ -7,8 +7,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class ChartNode {
     private String name;
-    private boolean draggable;
-    private int[] symbolSize;
-    private String color;
-    private String category;
+    private String des;
+    private Integer symbolSize;
+    private Integer category;
+
+    public ChartNode() {
+    }
 }

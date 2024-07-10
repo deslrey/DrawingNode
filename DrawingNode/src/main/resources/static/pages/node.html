@@ -4,9 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>关系图案例</title>
-    <!-- 引入 ECharts 和 Vue 文件 -->
-    <script src="../js/echarts.js" type="text/javascript" charset="utf-8"></script>
     <script src="../js/vue.js"></script>
+    <script src="../js/echarts.js"></script>
     <script src="../js/axios-0.18.0.js"></script>
     <link rel="stylesheet" href="../css/node.css">
 </head>
@@ -19,175 +18,183 @@
             <li><a href="#">关于</a></li>
             <li><a href="#">联系</a></li>
             <li>
-                <input type="text" placeholder="输入内容" class="nav-input" v-model="caseNumber">
+                <label>
+                    <input type="text" placeholder="输入内容" class="nav-input" v-model="caseNumber">
+                </label>
                 <button class="nav-button" @click="fetchDataByInput">提交</button>
             </li>
             <li>
-                <select v-model="selectedCaseNumber" class="nav-select">
-                    <option v-for="caseNum in caseNumbers" :key="caseNum" :value="caseNum">{{ caseNum }}</option>
-                </select>
+                <label>
+                    <select v-model="selectedCaseNumber" class="nav-select">
+                        <option v-for="caseNum in caseNumbers" :key="caseNum" :value="caseNum">{{ caseNum }}</option>
+                    </select>
+                </label>
                 <button class="nav-button" @click="fetchDataByDropdown">查询</button>
+            </li>
+            <li>
+                <button class="nav-button" @click="fetchChartData">查询</button>
             </li>
         </ul>
     </nav>
-    <div id="chart1">
-        <!-- <button @click="fetchChartData">点击请求数据</button> -->
-    </div>
+    <div id="chart1"></div>
 </div>
 
 <script type="text/javascript">
     const vm = new Vue({
-        el: '#app',
-        data: {
-            chartData: null,
-            categories: null,
-            caseNumber: '',
-            caseNumbers: [],
-            selectedCaseNumber: ''
-        },
-        mounted() {
-            this.fetchChartData();
-            this.fetchAllCaseNumbers();
-        },
-        methods: {
-            fetchChartData() {
-                axios.get('/chart/data')
-                    .then(response => {
-                        console.log('请求成功 = ', response)
-                        const data = response.data.data;
-                        this.chartData = data[0];
-                        this.links = data[1];
-                        this.categories = data[2];
-                        this.initChart();
-                    })
-                    .catch(error => {
-                        console.error("There was an error fetching the chart data!", error);
-                    });
+            el: '#app',
+            data: {
+                chartData: null,
+                categories: null,
+                caseNumber: '',
+                caseNumbers: [],
+                selectedCaseNumber: ''
             },
-            fetchAllCaseNumbers() {
-                axios.get('/operation/allCase')
-                    .then(response => {
-                        console.log('请求成功 = ', response)
-                        this.caseNumbers = response.data.data;
-                    })
-                    .catch(error => {
-                        console.error("There was an error fetching the case numbers!", error);
-                    });
+            mounted() {
+                // Fetch all case numbers on component mount
+                this.fetchAllCaseNumbers();
+                this.fetchChartData();
             },
-            fetchDataByInput() {
-                if (!this.caseNumber) {
-                    alert('请输入案件号');
-                    return;
-                }
-                axios.get(`/operation/inquire/${this.caseNumber}`)
-                    .then(response => {
-                        console.log('请求成功 = ', response)
-                        const data = response.data.data;
-                        this.chartData = data[0];
-                        this.links = data[1];
-                        this.categories = data[2];
-                        this.initChart();
-                    })
-                    .catch(error => {
-                        console.error("There was an error fetching the data!", error);
-                    });
-            },
-            fetchDataByDropdown() {
-                if (!this.selectedCaseNumber) {
-                    alert('请选择一个案件号');
-                    return;
-                }
-                axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
-                    .then(response => {
-                        console.log('请求成功 = ', response)
-                        const data = response.data.data;
-                        this.chartData = data[0];
-                        this.links = data[1];
-                        this.categories = data[2];
-                        this.initChart();
-                    })
-                    .catch(error => {
-                        console.error("There was an error fetching the data!", error);
-                    });
-            },
-            initChart() {
-                if (!this.chartData || !this.categories) return;
+            methods: {
+                fetchChartData() {
+                    // Example method for fetching chart data using axios
+                    axios.get('/chart/data')
+                        .then(response => {
+                            console.log("---------------", response)
+                            const data = response.data.data;
+                            // Adjust chartData, categories, and links as needed
+                            this.chartData = data.nodes;
+                            this.links = data.links;
+                            this.categories = data.categories;
+                            this.initChart();
+                        })
+                        .catch(error => {
+                            console.log("---------------", error)
+                            console.error("Error fetching chart data", error);
+                        });
+                },
+                fetchAllCaseNumbers() {
+                    // Example method for fetching all case numbers using axios
+                    axios.get('/operation/allCase')
+                        .then(response => {
+                            this.caseNumbers = response.data.data;
+                        })
+                        .catch(error => {
+                            console.error("Error fetching case numbers", error);
+                        });
+                },
+                fetchDataByInput() {
+                    // Example method for fetching data based on input value
+                    if (!this.caseNumber) {
+                        alert('请输入案件号');
+                        return;
+                    }
+                    axios.get(`/operation/inquire/${this.caseNumber}`)
+                        .then(response => {
+                            const data = response.data.data;
+                            this.chartData = data.nodes;
+                            this.links = data.links;
+                            this.categories = data.categories;
+                            this.initChart();
+                        })
+                        .catch(error => {
+                            console.error("Error fetching data by input", error);
+                        });
+                },
+                fetchDataByDropdown() {
+                    // Example method for fetching data based on dropdown selection
+                    if (!this.selectedCaseNumber) {
+                        alert('请选择一个案件号');
+                        return;
+                    }
+                    axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
+                        .then(response => {
+                            const data = response.data.data;
+                            this.chartData = data.nodes;
+                            this.links = data.links;
+                            this.categories = data.categories;
+                            this.initChart();
+                        })
+                        .catch(error => {
+                            console.error("Error fetching data by dropdown", error);
+                        });
+                },
+                initChart() {
+                    // Example method for initializing ECharts
+                    if (!this.chartData || !this.categories) return;
 
-                var chart1 = echarts.init(document.getElementById('chart1'));
+                    var chart1 = echarts.init(document.getElementById('chart1'));
 
-                var option = {
-                    backgroundColor: '#ccc',
-                    title: {
-                        text: "收入支出分析",
-                        left: '3%',
-                        top: '3%',
-                        textStyle: {
-                            color: '#000',
-                            fontSize: '30',
-                        }
-                    },
-                    tooltip: {
-                        formatter: function (param) {
-                            if (param.dataType === 'edge') {
-                                return param.data.target;
-                            }
-                            return param.data.name;
-                        }
-                    },
-                    series: [{
-                        edgeSymbol: ['none', 'arrow'],
-                        type: "graph",
-                        top: '10%',
-                        roam: true,
-                        focusNodeAdjacency: true,
-                        force: {
-                            repulsion: 1000,
-                            edgeLength: 200
+                    var option = {
+                        title: {
+                            text: 'ECharts 关系图'
                         },
-                        layout: "force",
-                        symbol: ['circle'],
-                        lineStyle: {
-                            normal: {
-                                color: '#000',
-                                width: 1,
-                                type: 'solid',
-                                opacity: 0.5,
-                                curveness: 0
+                        tooltip: {
+                            formatter: function (x) {
+                                return x.data.des;
                             }
                         },
-                        label: {
-                            normal: {
-                                show: true,
-                                position: "inside",
-                                textStyle: {
-                                    fontSize: 16
-                                }
-                            }
-                        },
-                        edgeLabel: {
-                            normal: {
-                                show: true,
-                                textStyle: {
-                                    fontSize: 14
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                mark: {
+                                    show: true
                                 },
-                                formatter: function (param) {
-                                    return param.data.category;
+                                restore: {
+                                    show: true
+                                },
+                                saveAsImage: {
+                                    show: true
                                 }
                             }
                         },
-                        data: this.chartData,
-                        categories: this.categories,
-                        links: this.links
-                    }],
-                    animationEasingUpdate: "quinticInOut",
-                    animationDurationUpdate: 100
-                };
+                        legend: [{
+                            data: this.categories.map(function (a) {
+                                return a.name;
+                            })
+                        }],
+                        series: [{
+                            type: 'graph',
+                            layout: 'force',
+                            symbolSize: 40,
+                            focusNodeAdjacency: true,
+                            roam: true,
+                            force: {
+                                repulsion: 2500,
+                                edgeLength: [10, 50]
+                            },
+                            draggable: true,
+                            lineStyle: {
+                                normal: {
+                                    width: 2,
+                                    color: '#4b565b',
+                                }
+                            },
+                            edgeLabel: {
+                                normal: {
+                                    show: true,
+                                    formatter: function (x) {
+                                        return x.data.name;
+                                    }
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    textStyle: {}
+                                }
+                            },
+                            data: this.chartData,
+                            links: this.links,
+                            categories: this.categories,
+                        }]
+                    };
 
-                chart1.setOption(option);
+                    chart1.setOption(option);
+                }
             }
-        }
-    });
+        })
+    ;
 </script>
-
 </body>
+
 </html>
