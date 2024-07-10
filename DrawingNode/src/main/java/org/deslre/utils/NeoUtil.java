@@ -4,14 +4,20 @@ import cn.hutool.core.bean.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.deslre.config.NeoDatabaseConfig;
 import org.deslre.handler.SpringContextHandler;
+import org.deslre.nodeModule.vo.RelationshipNode;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.deslre.utils.StringUtil.isEmpty;
@@ -70,6 +76,39 @@ public class NeoUtil {
         }
 
         return Results.ok();
+    }
+
+    public Results<List<RelationshipNode>> getAllRelationships(String caseNumber) {
+        if (isEmpty(caseNumber)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
+        List<RelationshipNode> list = new ArrayList<>();
+        RelationshipNode node;
+        try {
+            String cql = "match (a) - [c:`" + caseNumber + "`] ->  (b) return a,c,b";
+            print("getLeftRelation()", cql);
+            org.neo4j.driver.Result result = session.run(cql);
+            Node startNode;
+            Node endNode;
+            Record record;
+            Relationship relationship;
+            while (result.hasNext()) {
+                node = new RelationshipNode();
+                record = result.next();
+                startNode = record.get("a").asNode();
+                endNode = record.get("b").asNode();
+                relationship = record.get("c").asRelationship();
+
+                node.setStartNode(startNode.asMap().toString());
+                node.setRelationship(relationship.asMap().toString());
+                node.setEndNode(endNode.asMap().toString());
+                list.add(node);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Results.ok(list);
     }
 
 

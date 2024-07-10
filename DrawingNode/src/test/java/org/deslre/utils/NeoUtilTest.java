@@ -3,6 +3,7 @@ package org.deslre.utils;
 import org.deslre.nodeModule.dto.FirstDto;
 import org.deslre.nodeModule.entity.FirstNodeEntity;
 import org.deslre.nodeModule.repository.FirstNodeRepository;
+import org.deslre.nodeModule.vo.RelationshipNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -19,8 +20,9 @@ class NeoUtilTest {
     private FirstNodeRepository firstNodeRepository;
 
     @Test
-    void addANumberToAllRelationships() {
-
+    void getAllRelationships() {
+        List<RelationshipNode> nodeList = neoUtil.getAllRelationships("2021").getData();
+        nodeList.forEach(System.out::println);
     }
 
     @Test
