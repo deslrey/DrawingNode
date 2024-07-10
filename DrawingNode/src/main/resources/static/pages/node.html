@@ -41,160 +41,170 @@
 
 <script type="text/javascript">
     const vm = new Vue({
-            el: '#app',
-            data: {
-                chartData: null,
-                categories: null,
-                caseNumber: '',
-                caseNumbers: [],
-                selectedCaseNumber: ''
-            },
-            mounted() {
-                // Fetch all case numbers on component mount
-                this.fetchAllCaseNumbers();
-                this.fetchChartData();
-            },
-            methods: {
-                fetchChartData() {
-                    // Example method for fetching chart data using axios
-                    axios.get('/chart/data')
-                        .then(response => {
-                            console.log("---------------", response)
-                            const data = response.data.data;
-                            // Adjust chartData, categories, and links as needed
-                            this.chartData = data.nodes;
-                            this.links = data.links;
-                            this.categories = data.categories;
-                            this.initChart();
-                        })
-                        .catch(error => {
-                            console.log("---------------", error)
-                            console.error("Error fetching chart data", error);
-                        });
-                },
-                fetchAllCaseNumbers() {
-                    // Example method for fetching all case numbers using axios
-                    axios.get('/operation/allCase')
-                        .then(response => {
-                            this.caseNumbers = response.data.data;
-                        })
-                        .catch(error => {
-                            console.error("Error fetching case numbers", error);
-                        });
-                },
-                fetchDataByInput() {
-                    // Example method for fetching data based on input value
-                    if (!this.caseNumber) {
-                        alert('请输入案件号');
-                        return;
-                    }
-                    axios.get(`/operation/inquire/${this.caseNumber}`)
-                        .then(response => {
-                            const data = response.data.data;
-                            this.chartData = data.nodes;
-                            this.links = data.links;
-                            this.categories = data.categories;
-                            this.initChart();
-                        })
-                        .catch(error => {
-                            console.error("Error fetching data by input", error);
-                        });
-                },
-                fetchDataByDropdown() {
-                    // Example method for fetching data based on dropdown selection
-                    if (!this.selectedCaseNumber) {
-                        alert('请选择一个案件号');
-                        return;
-                    }
-                    axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
-                        .then(response => {
-                            const data = response.data.data;
-                            this.chartData = data.nodes;
-                            this.links = data.links;
-                            this.categories = data.categories;
-                            this.initChart();
-                        })
-                        .catch(error => {
-                            console.error("Error fetching data by dropdown", error);
-                        });
-                },
-                initChart() {
-                    // Example method for initializing ECharts
-                    if (!this.chartData || !this.categories) return;
+        el: '#app',
+        data: {
+            chartData: null,
+            categories: null,
+            caseNumber: '',
+            caseNumbers: [],
+            selectedCaseNumber: ''
+        },
+        mounted() {
+            // Fetch all case numbers on component mount
+            this.fetchAllCaseNumbers();
+            this.fetchChartData();
 
-                    var chart1 = echarts.init(document.getElementById('chart1'));
+            // Listen for window resize event
+            window.addEventListener('resize', this.resizeChart);
+        },
+        methods: {
+            fetchChartData() {
+                // Example method for fetching chart data using axios
+                axios.get('/chart/data')
+                    .then(response => {
+                        const data = response.data.data;
+                        // Adjust chartData, categories, and links as needed
+                        this.chartData = data.nodes;
+                        this.links = data.links;
+                        this.categories = data.categories;
+                        this.initChart();
+                    })
+                    .catch(error => {
+                        console.error("Error fetching chart data", error);
+                    });
+            },
+            fetchAllCaseNumbers() {
+                // Example method for fetching all case numbers using axios
+                axios.get('/operation/allCase')
+                    .then(response => {
+                        this.caseNumbers = response.data.data;
+                    })
+                    .catch(error => {
+                        console.error("Error fetching case numbers", error);
+                    });
+            },
+            fetchDataByInput() {
+                // Example method for fetching data based on input value
+                if (!this.caseNumber) {
+                    alert('请输入案件号');
+                    return;
+                }
+                axios.get(`/operation/inquire/${this.caseNumber}`)
+                    .then(response => {
+                        const data = response.data.data;
+                        this.chartData = data.nodes;
+                        this.links = data.links;
+                        this.categories = data.categories;
+                        this.initChart();
+                    })
+                    .catch(error => {
+                        console.error("Error fetching data by input", error);
+                    });
+            },
+            fetchDataByDropdown() {
+                // Example method for fetching data based on dropdown selection
+                if (!this.selectedCaseNumber) {
+                    alert('请选择一个案件号');
+                    return;
+                }
+                axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
+                    .then(response => {
+                        const data = response.data.data;
+                        this.chartData = data.nodes;
+                        this.links = data.links;
+                        this.categories = data.categories;
+                        this.initChart();
+                    })
+                    .catch(error => {
+                        console.error("Error fetching data by dropdown", error);
+                    });
+            },
+            initChart() {
+                // Example method for initializing ECharts
+                if (!this.chartData || !this.categories) return;
 
-                    var option = {
-                        title: {
-                            text: 'ECharts 关系图'
+                var chart1 = echarts.init(document.getElementById('chart1'));
+
+                var option = {
+                    backgroundColor: '#2EA7C2FF',    // 背景颜色
+                    title: {
+                        text: 'ECharts 关系图',
+                        textStyle: { // 标题样式
+                            color: '#000', // 标题字体颜色
+                            fontSize: '30', // 标题字体大小
+                        }
+                    },
+                    tooltip: {
+                        formatter: function (x) {
+                            return x.data.des;
+                        }
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: {show: true},
+                            restore: {show: true},
+                            saveAsImage: {show: true}
+                        }
+                    },
+                    legend: [{
+                        data: this.categories.map(function (a) {
+                            return a.name;
+                        })
+                    }],
+                    series: [{
+                        type: 'graph',
+                        layout: 'force',
+                        symbolSize: 40,
+                        focusNodeAdjacency: true,
+                        roam: true,
+                        force: {
+                            repulsion: 2500,
+                            edgeLength: [10, 50]
                         },
-                        tooltip: {
-                            formatter: function (x) {
-                                return x.data.des;
+                        draggable: true,
+                        lineStyle: {
+                            normal: {
+                                width: 2,
+                                color: '#4b565b',
                             }
                         },
-                        toolbox: {
-                            show: true,
-                            feature: {
-                                mark: {
-                                    show: true
-                                },
-                                restore: {
-                                    show: true
-                                },
-                                saveAsImage: {
-                                    show: true
+                        edgeLabel: {
+                            normal: {
+                                show: true,
+                                formatter: function (x) {
+                                    return x.data.name;
                                 }
                             }
                         },
-                        legend: [{
-                            data: this.categories.map(function (a) {
-                                return a.name;
-                            })
-                        }],
-                        series: [{
-                            type: 'graph',
-                            layout: 'force',
-                            symbolSize: 40,
-                            focusNodeAdjacency: true,
-                            roam: true,
-                            force: {
-                                repulsion: 2500,
-                                edgeLength: [10, 50]
-                            },
-                            draggable: true,
-                            lineStyle: {
-                                normal: {
-                                    width: 2,
-                                    color: '#4b565b',
-                                }
-                            },
-                            edgeLabel: {
-                                normal: {
-                                    show: true,
-                                    formatter: function (x) {
-                                        return x.data.name;
-                                    }
-                                }
-                            },
-                            label: {
-                                normal: {
-                                    show: true,
-                                    textStyle: {}
-                                }
-                            },
-                            data: this.chartData,
-                            links: this.links,
-                            categories: this.categories,
-                        }]
-                    };
+                        label: {
+                            normal: {
+                                show: true,
+                                textStyle: {}
+                            }
+                        },
+                        data: this.chartData,
+                        links: this.links,
+                        categories: this.categories,
+                    }]
+                };
 
-                    chart1.setOption(option);
+                chart1.setOption(option);
+                this.chartInstance = chart1;
+            },
+            resizeChart() {
+                if (this.chartInstance) {
+                    this.chartInstance.resize();
                 }
             }
-        })
-    ;
+        },
+        beforeDestroy() {
+            // Remove the event listener when component is destroyed
+            window.removeEventListener('resize', this.resizeChart);
+        }
+    });
 </script>
+
 </body>
 
 </html>

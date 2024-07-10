@@ -20,6 +20,7 @@ html, body {
     background-color: #333;
     overflow: hidden;
     padding: 10px;
+    flex-shrink: 0;
 }
 
 .navbar ul {
@@ -32,7 +33,6 @@ html, body {
 }
 
 .navbar li {
-    float: left;
     margin-right: 20px;
 }
 
@@ -73,8 +73,7 @@ html, body {
 }
 
 #chart1 {
-    width: 100%;
-    height: calc(100% - 70px); /* Adjust the height to leave space for the navbar */
+    flex-grow: 1;
     margin-top: 10px;
     position: relative;
 }
