@@ -64,7 +64,7 @@
                     .then(response => {
                         console.log('------------------', response)
                         const data = response.data.data;
-                        // Adjust chartData, categories, and links as needed
+                        // 根据需要调整 chartData、类别和链接
                         this.chartData = data.nodes;
                         this.links = data.links;
                         this.categories = data.categories;
@@ -127,7 +127,7 @@
                 var chart1 = echarts.init(document.getElementById('chart1'));
 
                 var option = {
-                    backgroundColor: '#2EA7C2FF',    // 背景颜色
+                    backgroundColor: '#fff',    // 背景颜色
                     title: {
                         text: 'ECharts 关系图',
                         textStyle: { // 标题样式
@@ -158,6 +158,7 @@
                         layout: 'force',
                         symbolSize: 40,
                         focusNodeAdjacency: true,
+                        legendHoverLink: false,
                         roam: true,
                         force: {
                             repulsion: 1000,
