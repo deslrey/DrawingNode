@@ -161,15 +161,17 @@
                         legendHoverLink: false,
                         roam: true,
                         force: {
-                            repulsion: 1000,
+                            repulsion: 500,
                             edgeLength: [150, 100]
                         },
                         draggable: true,
                         lineStyle: {
-                            normal: {
-                                width: 2,
-                                color: '#4b565b',
-                            }
+                            color: 'source',
+                            width: 2
+                            // normal: {
+                            //     width: 2,
+                            //     // color: '#4b565b',
+                            // }
                         },
                         edgeLabel: {
                             normal: {
@@ -180,9 +182,17 @@
                             }
                         },
                         label: {
+                            position: 'right',
+                            formatter: '{b}',
                             normal: {
                                 show: true,
                                 textStyle: {}
+                            }
+                        },
+                        emphasis: {
+                            focus: 'adjacency',
+                            lineStyle: {
+                                width: 10
                             }
                         },
                         data: this.chartData,

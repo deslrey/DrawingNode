@@ -114,11 +114,11 @@ public class ChartController {
 
     private Integer selectionSize(String str) {
         return switch (str) {
-            case "一级" -> 70;
-            case "二级" -> 65;
-            case "三级" -> 60;
-            case "四级" -> 55;
-            default -> 50;
+            case "一级" -> 60;
+            case "二级" -> 55;
+            case "三级" -> 50;
+            case "四级" -> 45;
+            default -> 40;
         };
     }
 
