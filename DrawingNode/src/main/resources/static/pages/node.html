@@ -40,7 +40,6 @@
     </div>
 </div>
 
-
 <script type="text/javascript">
     const vm = new Vue({
         el: '#app',
@@ -56,33 +55,30 @@
                 links: null,
             },
             caseNumbers: [],
-            selectedCaseNumber: ''
+            selectedCaseNumber: '',
+            chartInstance: null
         },
         computed: {
             hasData() {
-                console.log("111")
-                return this.echartsData.chartData != null
+                return this.echartsData.chartData != null;
             }
         },
         mounted() {
-            //获取所有案例编号
             this.fetchAllCaseNumbers();
-            // this.fetchChartData();
-
-            // 侦听窗口调整大小时事件
             window.addEventListener('resize', this.resizeChart);
         },
         methods: {
             fetchChartData() {
                 axios.get('/chart/data')
                     .then(response => {
-                        console.log('------------------', response)
                         const data = response.data.data;
-                        // 根据需要调整 chartData、类别和链接
                         this.echartsData.chartData = data.nodes;
                         this.echartsData.links = data.links;
                         this.echartsData.categories = data.categories;
-                        this.initChart();
+                        this.$nextTick(() => {
+                            this.initChart();
+                            this.resizeChart();
+                        });
                     })
                     .catch(error => {
                         console.error("Error fetching chart data", error);
@@ -112,7 +108,10 @@
                         this.echartsData.chartData = data.nodes;
                         this.echartsData.links = data.links;
                         this.echartsData.categories = data.categories;
-                        this.initChart();
+                        this.$nextTick(() => {
+                            this.initChart();
+                            this.resizeChart();
+                        });
                     })
                     .catch(error => {
                         console.error("Error fetching data by input", error);
@@ -129,7 +128,10 @@
                         this.echartsData.chartData = data.nodes;
                         this.echartsData.links = data.links;
                         this.echartsData.categories = data.categories;
-                        this.initChart();
+                        this.$nextTick(() => {
+                            this.initChart();
+                            this.resizeChart();
+                        });
                     })
                     .catch(error => {
                         console.error("Error fetching data by dropdown", error);
@@ -141,12 +143,12 @@
                 var chart1 = echarts.init(document.getElementById('chart1'));
 
                 var option = {
-                    backgroundColor: '#fff',    // 背景颜色
+                    backgroundColor: '#fff',
                     title: {
                         text: 'ECharts 关系图',
-                        textStyle: { // 标题样式
-                            color: '#000', // 标题字体颜色
-                            fontSize: '30', // 标题字体大小
+                        textStyle: {
+                            color: '#000',
+                            fontSize: '30',
                         }
                     },
                     tooltip: {
@@ -182,10 +184,6 @@
                         lineStyle: {
                             color: 'source',
                             width: 2
-                            // normal: {
-                            //     width: 2,
-                            //     // color: '#4b565b',
-                            // }
                         },
                         edgeLabel: {
                             normal: {
@@ -225,7 +223,6 @@
             }
         },
         beforeDestroy() {
-            // 在组件销毁时删除事件侦听器
             window.removeEventListener('resize', this.resizeChart);
         }
     });
