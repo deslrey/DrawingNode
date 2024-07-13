@@ -17,10 +17,7 @@ import org.neo4j.driver.types.Relationship;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +52,7 @@ public class NeoUtil {
             log.info("cql = {}", cql);
             session.run(cql);
         } catch (Exception e) {
+            log.error("添加单个节点出现异常,节点数据为 :{}", premise);
             return Results.fail(e.getMessage());
         }
         return Results.ok();
@@ -76,7 +74,8 @@ public class NeoUtil {
             log.info("cql = {}", cql);
             session.run(cql);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("添加节点关系失败,头节点为 : {},关系为 :{},尾结点为 : {}", StartNode, Relation, EndNode);
+            return Results.fail(ResultCodeEnum.SERVICE_ERROR);
         }
 
         return Results.ok();
@@ -110,7 +109,8 @@ public class NeoUtil {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("查询案件关系失败,案件编号为 : {}", caseNumber);
+            return Results.fail(ResultCodeEnum.SERVICE_ERROR);
         }
         return Results.ok(list);
     }
@@ -123,9 +123,11 @@ public class NeoUtil {
         try {
             String cql = "match (n) detach delete n";
             session.run(cql);
-            log.error("全部删除成功");
+            log.error("删除成功");
+            Results.ok();
         } catch (Exception e) {
-            log.error("全部删除失败: {}", e.getMessage());
+            log.error("删除失败: {}", e.getMessage());
+            Results.fail(ResultCodeEnum.SERVICE_ERROR);
         }
     }
 

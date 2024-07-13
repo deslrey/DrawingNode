@@ -4,7 +4,7 @@ package org.deslre.utils;
 public class StringUtil {
 
     public static boolean isEmpty(final CharSequence str) {
-        return str == null || str.length() == 0;
+        return str == null || str.isEmpty();
     }
 
     public static <T> boolean isEmpty(final Class<T> clazz) {
