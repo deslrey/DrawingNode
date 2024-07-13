@@ -4,7 +4,7 @@ import org.deslre.nodeModule.chartNode.*;
 import org.deslre.nodeModule.dto.ResultDto;
 import org.deslre.nodeModule.vo.RelationshipNode;
 import org.deslre.utils.NeoUtil;
-import org.deslre.utils.Results;
+import org.deslre.result.Results;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

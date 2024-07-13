@@ -1,12 +1,10 @@
 package org.deslre.nodeModule.controller;
 
 import org.deslre.nodeModule.service.RelationService;
-import org.deslre.utils.ResultCodeEnum;
-import org.deslre.utils.Results;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.deslre.result.CaseObject;
+import org.deslre.result.ResultCodeEnum;
+import org.deslre.result.Results;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -21,13 +19,16 @@ public class OperationController {
     @Resource
     private RelationService relationService;
 
-    @GetMapping("/inquire/{case}")
-    public Results<String> addAllCorrespondingCases(@PathVariable("case") String caseNumber) {
-        if (isEmpty(caseNumber)) {
-            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
-        }
-        System.out.println("caseNumber = " + caseNumber);
-        return Results.ok();
+    @PostMapping("/inquire")
+    public Results<String> addAllCorrespondingCases(@RequestBody CaseObject caseObject) {
+
+        System.out.println("caseObject = " + caseObject);
+
+        return Results.ok("aa");
+
+//        if (isEmpty(caseNumber)) {
+//            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+//        }
 //        return relationService.addAllCorrespondingCases(caseNumber);
     }
 

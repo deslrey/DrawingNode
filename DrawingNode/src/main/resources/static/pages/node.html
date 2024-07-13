@@ -14,60 +14,74 @@
 <div id="app" class="root">
     <nav class="navbar">
         <ul>
-            <li><a href="#">首页</a></li>
-            <li><a href="#">关于</a></li>
-            <li><a href="#">联系</a></li>
             <li>
                 <label>
-                    <input type="text" placeholder="输入内容" class="nav-input" v-model="caseNumber">
+                    <input type="text" placeholder="输入案件号" class="nav-input" v-model="caseObject.caseNumber">
+                    <input type="text" placeholder="输入被查询人名" class="nav-input" v-model="caseObject.caseName">
+                    <input type="text" placeholder="输入被查询人身份证" class="nav-input"
+                           v-model="caseObject.caseCardId">
                 </label>
-                <button class="nav-button" @click="fetchDataByInput">提交</button>
+                <button class="nav-button" @click="fetchDataByInput">查询</button>
             </li>
             <li>
                 <label>
                     <select v-model="selectedCaseNumber" class="nav-select">
+                        <option value="" disabled selected hidden>选择已有案件号</option>
                         <option v-for="caseNum in caseNumbers" :key="caseNum" :value="caseNum">{{ caseNum }}</option>
                     </select>
                 </label>
-                <button class="nav-button" @click="fetchDataByDropdown">查询</button>
-            </li>
-            <li>
                 <button class="nav-button" @click="fetchChartData">查询</button>
             </li>
         </ul>
     </nav>
-    <div id="chart1"></div>
+    <div id="chart-container">
+        <div id="chart1" v-show="hasData"></div>
+        <img v-if="!hasData" src="/img/404.webp" alt="显示失败" class="no-data-img">
+    </div>
 </div>
+
 
 <script type="text/javascript">
     const vm = new Vue({
         el: '#app',
         data: {
-            chartData: null,
-            categories: null,
-            caseNumber: '',
+            caseObject: {
+                caseNumber: '',
+                caseName: '',
+                caseCardId: '',
+            },
+            echartsData: {
+                chartData: null,
+                categories: null,
+                links: null,
+            },
             caseNumbers: [],
             selectedCaseNumber: ''
         },
+        computed: {
+            hasData() {
+                console.log("111")
+                return this.echartsData.chartData != null
+            }
+        },
         mounted() {
-            // Fetch all case numbers on component mount
+            //获取所有案例编号
             this.fetchAllCaseNumbers();
-            this.fetchChartData();
+            // this.fetchChartData();
 
-            // Listen for window resize event
+            // 侦听窗口调整大小时事件
             window.addEventListener('resize', this.resizeChart);
         },
         methods: {
             fetchChartData() {
-                // Example method for fetching chart data using axios
                 axios.get('/chart/data')
                     .then(response => {
                         console.log('------------------', response)
                         const data = response.data.data;
                         // 根据需要调整 chartData、类别和链接
-                        this.chartData = data.nodes;
-                        this.links = data.links;
-                        this.categories = data.categories;
+                        this.echartsData.chartData = data.nodes;
+                        this.echartsData.links = data.links;
+                        this.echartsData.categories = data.categories;
                         this.initChart();
                     })
                     .catch(error => {
@@ -75,7 +89,6 @@
                     });
             },
             fetchAllCaseNumbers() {
-                // Example method for fetching all case numbers using axios
                 axios.get('/operation/allCase')
                     .then(response => {
                         this.caseNumbers = response.data.data;
@@ -85,17 +98,20 @@
                     });
             },
             fetchDataByInput() {
-                // Example method for fetching data based on input value
-                if (!this.caseNumber) {
+                if (!this.caseObject.caseNumber) {
                     alert('请输入案件号');
                     return;
                 }
-                axios.get(`/operation/inquire/${this.caseNumber}`)
+                axios.post(`/operation/inquire`, this.caseObject, {
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    }
+                })
                     .then(response => {
                         const data = response.data.data;
-                        this.chartData = data.nodes;
-                        this.links = data.links;
-                        this.categories = data.categories;
+                        this.echartsData.chartData = data.nodes;
+                        this.echartsData.links = data.links;
+                        this.echartsData.categories = data.categories;
                         this.initChart();
                     })
                     .catch(error => {
@@ -103,7 +119,6 @@
                     });
             },
             fetchDataByDropdown() {
-                // Example method for fetching data based on dropdown selection
                 if (!this.selectedCaseNumber) {
                     alert('请选择一个案件号');
                     return;
@@ -111,9 +126,9 @@
                 axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
                     .then(response => {
                         const data = response.data.data;
-                        this.chartData = data.nodes;
-                        this.links = data.links;
-                        this.categories = data.categories;
+                        this.echartsData.chartData = data.nodes;
+                        this.echartsData.links = data.links;
+                        this.echartsData.categories = data.categories;
                         this.initChart();
                     })
                     .catch(error => {
@@ -121,8 +136,7 @@
                     });
             },
             initChart() {
-                // Example method for initializing ECharts
-                if (!this.chartData || !this.categories) return;
+                if (!this.echartsData.chartData || !this.echartsData.categories) return;
 
                 var chart1 = echarts.init(document.getElementById('chart1'));
 
@@ -149,7 +163,7 @@
                         }
                     },
                     legend: [{
-                        data: this.categories.map(function (a) {
+                        data: this.echartsData.categories.map(function (a) {
                             return a.name;
                         })
                     }],
@@ -195,9 +209,9 @@
                                 width: 10
                             }
                         },
-                        data: this.chartData,
-                        links: this.links,
-                        categories: this.categories,
+                        data: this.echartsData.chartData,
+                        links: this.echartsData.links,
+                        categories: this.echartsData.categories,
                     }]
                 };
 
@@ -211,7 +225,7 @@
             }
         },
         beforeDestroy() {
-            // Remove the event listener when component is destroyed
+            // 在组件销毁时删除事件侦听器
             window.removeEventListener('resize', this.resizeChart);
         }
     });

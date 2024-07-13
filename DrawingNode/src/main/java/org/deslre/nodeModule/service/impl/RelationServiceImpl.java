@@ -10,8 +10,8 @@ import org.deslre.nodeModule.service.RelationService;
 import org.deslre.nodeModule.vo.RelationVo;
 import org.deslre.utils.ExtraUtil;
 import org.deslre.utils.NeoUtil;
-import org.deslre.utils.ResultCodeEnum;
-import org.deslre.utils.Results;
+import org.deslre.result.ResultCodeEnum;
+import org.deslre.result.Results;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

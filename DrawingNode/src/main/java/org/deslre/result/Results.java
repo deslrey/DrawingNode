@@ -1,4 +1,4 @@
-package org.deslre.utils;
+package org.deslre.result;
 
 import lombok.Data;
 
