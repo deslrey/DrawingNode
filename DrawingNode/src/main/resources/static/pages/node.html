@@ -8,6 +8,10 @@
     <script src="../js/echarts.js"></script>
     <script src="../js/axios-0.18.0.js"></script>
     <link rel="stylesheet" href="../css/node.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!--    <script src="../plugins/element-ui/index.js"></script>-->
+    <!--    <link rel="stylesheet" href="../plugins/element-ui/index.css">-->
 </head>
 
 <body>
@@ -16,21 +20,21 @@
         <ul>
             <li>
                 <label>
-                    <input type="text" placeholder="输入案件号" class="nav-input" v-model="caseObject.caseNumber">
-                    <input type="text" placeholder="输入被查询人名" class="nav-input" v-model="caseObject.caseName">
-                    <input type="text" placeholder="输入被查询人身份证" class="nav-input"
-                           v-model="caseObject.caseCardId">
+                    <el-input placeholder="输入案件号" v-model="caseObject.caseNumber" class="nav-input"></el-input>
+                    <el-input placeholder="输入被查询人名" v-model="caseObject.caseName" class="nav-input"></el-input>
+                    <el-input placeholder="输入被查询人身份证" v-model="caseObject.caseCardId"
+                              class="nav-input"></el-input>
                 </label>
-                <button class="nav-button" @click="fetchDataByInput">查询</button>
+                <el-button type="primary" @click="fetchDataByInput" class="nav-button">查询</el-button>
             </li>
             <li>
                 <label>
-                    <select v-model="selectedCaseNumber" class="nav-select">
-                        <option value="" disabled selected hidden>选择已有案件号</option>
-                        <option v-for="caseNum in caseNumbers" :key="caseNum" :value="caseNum">{{ caseNum }}</option>
-                    </select>
+                    <el-select v-model="selectedCaseNumber" placeholder="选择已有案件号" class="nav-select" clearable>
+                        <el-option v-for="caseNum in caseNumbers" :key="caseNum" :label="caseNum"
+                                   :value="caseNum"></el-option>
+                    </el-select>
                 </label>
-                <button class="nav-button" @click="fetchChartData">查询</button>
+                <el-button type="primary" @click="fetchChartData" class="nav-button">查询</el-button>
             </li>
         </ul>
     </nav>
@@ -39,7 +43,6 @@
         <img v-if="!hasData" src="/img/404.webp" alt="显示失败" class="no-data-img">
     </div>
 </div>
-
 <script type="text/javascript">
     const vm = new Vue({
         el: '#app',
@@ -81,7 +84,7 @@
                         });
                     })
                     .catch(error => {
-                        console.error("Error fetching chart data", error);
+                        this.$message.error("Error fetching chart data: " + error);
                     });
             },
             fetchAllCaseNumbers() {
@@ -90,12 +93,12 @@
                         this.caseNumbers = response.data.data;
                     })
                     .catch(error => {
-                        console.error("Error fetching case numbers", error);
+                        this.$message.error("Error fetching case numbers: " + error);
                     });
             },
             fetchDataByInput() {
                 if (!this.caseObject.caseNumber) {
-                    alert('请输入案件号');
+                    this.$message.warning('请输入案件号');
                     return;
                 }
                 axios.post(`/operation/inquire`, this.caseObject, {
@@ -114,12 +117,12 @@
                         });
                     })
                     .catch(error => {
-                        console.error("Error fetching data by input", error);
+                        this.$message.error("Error fetching data by input: " + error);
                     });
             },
             fetchDataByDropdown() {
                 if (!this.selectedCaseNumber) {
-                    alert('请选择一个案件号');
+                    this.$message.warning('请选择一个案件号');
                     return;
                 }
                 axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
@@ -134,7 +137,7 @@
                         });
                     })
                     .catch(error => {
-                        console.error("Error fetching data by dropdown", error);
+                        this.$message.error("Error fetching data by dropdown: " + error);
                     });
             },
             initChart() {

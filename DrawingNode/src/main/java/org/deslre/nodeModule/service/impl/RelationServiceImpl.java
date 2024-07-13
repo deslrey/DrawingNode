@@ -80,7 +80,7 @@ public class RelationServiceImpl implements RelationService {
         list.forEach(caseTable -> {
             caseAllMap.put(caseTable.getCaseNumber(), true);
         });
-        caseAllMap.put("", true);
+//        caseAllMap.put("", true);
         log.info("编号更新完成");
     }
 
