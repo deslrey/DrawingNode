@@ -78,20 +78,24 @@ public class RelationServiceImpl implements RelationService {
         updateCaseMap();
         Set<String> keySet = caseAllMap.keySet();
         list.addAll(keySet);
+        log.debug("已有案号更新成功");
         return Results.ok(list);
     }
 
     @Override
     public Results<ChartDataResponse> getAllRelationshipsCaseNumber(final CaseObject caseObject) {
         if (isEmpty(caseObject)) {
+            log.debug("传入空值");
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
 
         Results<List<RelationshipNode>> results = neoUtil.getAllRelationships(caseObject.getCaseNumber());
         if (!Objects.equals(results.getCode(), FinalUtil.CODE)) {
+            log.debug(results.getMessage());
             return Results.fail(results.getMessage());
         }
         if (results.getData() == null || results.getData().isEmpty()) {
+            log.debug("该案号暂无数据");
             return Results.fail("该案号暂无数据");
         }
 
@@ -105,19 +109,24 @@ public class RelationServiceImpl implements RelationService {
         chartData.setLinks(links);
         chartData.setCategories(categories);
 
+        log.debug("查询成功");
+
         return Results.ok(chartData);
     }
 
     @Override
     public Results<ChartDataResponse> getCaseNumberData(final String caseNumber) {
         if (isEmpty(caseNumber)) {
+            log.debug("传入空值");
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
         Results<List<RelationshipNode>> results = neoUtil.getAllRelationships(caseNumber);
         if (!Objects.equals(results.getCode(), FinalUtil.CODE)) {
+            log.debug(results.getMessage());
             return Results.fail(results.getMessage());
         }
         if (results.getData() == null || results.getData().isEmpty()) {
+            log.debug("该案号暂无数据");
             return Results.fail("该案号暂无数据");
         }
 
@@ -130,7 +139,7 @@ public class RelationServiceImpl implements RelationService {
         chartData.setNodes(nodes);
         chartData.setLinks(links);
         chartData.setCategories(categories);
-
+        log.debug("查询成功");
         return Results.ok(chartData);
     }
 

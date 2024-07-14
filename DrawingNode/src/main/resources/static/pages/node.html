@@ -96,7 +96,6 @@
                     }
                 })
                     .then(response => {
-                        console.log('fetchDataByInput--------', response)
                         const data = response.data;
 
                         if (data.code !== this.code) {
@@ -114,7 +113,6 @@
                         this.queryOpen('成功', this.caseObject.caseNumber + '查询成功', 'success')
                     })
                     .catch(error => {
-                        console.log('fetchDataByInput--------', error)
                         this.$message.error("服务器异常: " + error);
                     });
             },
@@ -129,7 +127,6 @@
                         'Content-Type': 'application/json;charset=utf-8'
                     }
                 }).then(response => {
-                    console.log('getCaseNumberData--------', response)
                     const data = response.data;
                     console.log('131------------', data)
                     if (data.code !== this.code) {
@@ -147,7 +144,6 @@
                     this.queryOpen('成功', this.selectedCaseNumber + '查询成功', 'success')
                 })
                     .catch(error => {
-                        console.log('getCaseNumberData--------', error)
                         this.$message.error("服务器异常: " + error);
                     });
 

@@ -1,5 +1,6 @@
 package org.deslre.nodeModule.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.deslre.nodeModule.chartNode.ChartDataResponse;
 import org.deslre.nodeModule.service.RelationService;
 import org.deslre.result.CaseObject;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.deslre.utils.StringUtil.isEmpty;
 
+@Slf4j
 @RestController
 @RequestMapping("/operation")
 public class OperationController {
@@ -23,6 +25,7 @@ public class OperationController {
     @PostMapping("/inquire")
     public Results<ChartDataResponse> getAllRelationshipsCaseNumber(@RequestBody CaseObject caseObject) {
         if (isEmpty(caseObject)) {
+            log.debug("传入空对象");
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
         return relationService.getAllRelationshipsCaseNumber(caseObject);
