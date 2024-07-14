@@ -1,6 +1,5 @@
 package org.deslre;
 
-import org.deslre.loginModule.repository.UserLoginRepository;
 import org.deslre.nodeModule.dto.ResultDto;
 import org.deslre.nodeModule.entity.RelationEntity;
 import org.deslre.nodeModule.repository.RelationRepository;
@@ -14,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
@@ -21,8 +22,6 @@ class AppTests {
 
     private static final Logger log = LoggerFactory.getLogger(AppTests.class);
 
-    @Resource
-    private UserLoginRepository userLoginRepository;
     @Resource
     private RelationRepository relationRepository;
     @Resource
@@ -33,9 +32,16 @@ class AppTests {
 
     @Test
     void add() {
-        List<RelationEntity> list = relationRepository.findAllByCaseNumber("221");
-        System.out.println("list = " + list);
-        list.forEach(System.out::println);
+        List<String> categoryList = new ArrayList<>(10);
+
+
+        categoryList.add("三级");
+        categoryList.add("一级");
+        categoryList.add("二级");
+        categoryList.add("四级");
+
+        Collections.sort(categoryList);
+        categoryList.forEach(System.out::println);
     }
 
     @Test

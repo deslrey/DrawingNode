@@ -1,7 +1,10 @@
 package org.deslre.nodeModule.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.deslre.nodeModule.chartNode.ChartCategory;
 import org.deslre.nodeModule.chartNode.ChartDataResponse;
+import org.deslre.nodeModule.chartNode.ChartLink;
+import org.deslre.nodeModule.chartNode.ChartNode;
 import org.deslre.nodeModule.dto.ResultDto;
 import org.deslre.nodeModule.entity.CaseTableEntity;
 import org.deslre.nodeModule.entity.RelationEntity;
@@ -9,8 +12,10 @@ import org.deslre.nodeModule.repository.CaseTableRepository;
 import org.deslre.nodeModule.repository.RelationRepository;
 import org.deslre.nodeModule.service.RelationService;
 import org.deslre.nodeModule.vo.RelationVo;
+import org.deslre.nodeModule.vo.RelationshipNode;
 import org.deslre.result.CaseObject;
 import org.deslre.utils.ExtraUtil;
+import org.deslre.utils.FinalUtil;
 import org.deslre.utils.NeoUtil;
 import org.deslre.result.ResultCodeEnum;
 import org.deslre.result.Results;
@@ -78,7 +83,33 @@ public class RelationServiceImpl implements RelationService {
 
     @Override
     public Results<ChartDataResponse> getAllRelationshipsCaseNumber(CaseObject caseObject) {
-        return Results.ok(new ChartDataResponse());
+        return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+    }
+
+    @Override
+    public Results<ChartDataResponse> getCaseNumberData(String caseNumber) {
+        if (isEmpty(caseNumber)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
+        Results<List<RelationshipNode>> results = neoUtil.getAllRelationships(caseNumber);
+        if (!Objects.equals(results.getCode(), FinalUtil.CODE)) {
+            return Results.fail(results.getMessage());
+        }
+        if (results.getData() == null || results.getData().isEmpty()) {
+            return Results.fail("该案号暂无数据");
+        }
+
+        List<RelationshipNode> nodeList = results.getData();
+        List<ChartNode> nodes = extraUtil.generateNodes(nodeList);
+        List<ChartLink> links = extraUtil.generateLinks(nodeList);
+        List<ChartCategory> categories = extraUtil.generateCategories(nodeList);
+
+        ChartDataResponse chartData = new ChartDataResponse();
+        chartData.setNodes(nodes);
+        chartData.setLinks(links);
+        chartData.setCategories(categories);
+
+        return Results.ok(chartData);
     }
 
 

@@ -36,10 +36,8 @@ public class OperationController {
         if (isEmpty(caseNumber)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
-        System.out.println("caseNumber = " + caseNumber);
 
-        return Results.ok();
-
+        return relationService.getCaseNumberData(caseNumber);
     }
 
     @GetMapping("/allCase")

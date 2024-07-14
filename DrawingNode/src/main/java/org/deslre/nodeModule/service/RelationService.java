@@ -13,4 +13,6 @@ public interface RelationService {
     Results<List<String>> getAllCaseNumbers();
 
     Results<ChartDataResponse> getAllRelationshipsCaseNumber(CaseObject caseObject);
+
+    Results<ChartDataResponse> getCaseNumberData(String caseNumber);
 }

@@ -2,6 +2,7 @@ package org.deslre.nodeModule.controller;
 
 import org.deslre.nodeModule.chartNode.*;
 import org.deslre.nodeModule.dto.ResultDto;
+import org.deslre.nodeModule.service.RelationService;
 import org.deslre.nodeModule.vo.RelationshipNode;
 import org.deslre.utils.NeoUtil;
 import org.deslre.result.Results;
@@ -20,106 +21,24 @@ import java.util.Set;
 public class ChartController {
 
     @Resource
-    private NeoUtil neoUtil;
+    private RelationService relationService;
 
     @GetMapping("/data")
     public Results<ChartDataResponse> getChartData() {
-        List<RelationshipNode> nodeList = neoUtil.getAllRelationships("2021").getData();
-        List<ChartNode> nodes = generateNodes(nodeList);
-        List<ChartLink> links = generateLinks(nodeList);
-        List<ChartCategory> categories = generateCategories(nodeList);
-
-        ChartDataResponse chartData = new ChartDataResponse();
-        chartData.setNodes(nodes);
-        chartData.setLinks(links);
-        chartData.setCategories(categories);
+//        List<RelationshipNode> nodeList = neoUtil.getAllRelationships("2021").getData();
+//        List<ChartNode> nodes = generateNodes(nodeList);
+//        List<ChartLink> links = generateLinks(nodeList);
+//        List<ChartCategory> categories = generateCategories(nodeList);
+//
+//        ChartDataResponse chartData = new ChartDataResponse();
+//        chartData.setNodes(nodes);
+//        chartData.setLinks(links);
+//        chartData.setCategories(categories);
 
         // 返回成功结果
-        return Results.ok(chartData);
-    }
+//        return Results.ok(chartData);
 
-
-    private List<ChartCategory> generateCategories(List<RelationshipNode> nodeList) {
-        List<ChartCategory> categoryList = new ArrayList<>();
-
-        categoryList.add(new ChartCategory("一级"));
-        categoryList.add(new ChartCategory("二级"));
-        categoryList.add(new ChartCategory("三级"));
-        categoryList.add(new ChartCategory("四级"));
-
-        return categoryList;
-    }
-
-    private List<ChartLink> generateLinks(List<RelationshipNode> nodeList) {
-        List<ChartLink> chartLinkList = new ArrayList<>(nodeList.size());
-        ChartLink chartLink;
-        for (RelationshipNode node : nodeList) {
-            chartLink = new ChartLink();
-            setRelaList(node, chartLink);
-            chartLinkList.add(chartLink);
-        }
-        return chartLinkList;
-    }
-
-    private List<ChartNode> generateNodes(List<RelationshipNode> nodeList) {
-        Set<ChartNode> chartNodeSet = new HashSet<>(nodeList.size());
-        for (RelationshipNode node : nodeList) {
-            setRelaList(node, chartNodeSet);
-        }
-
-        return new ArrayList<>(chartNodeSet);
-    }
-
-    private void setRelaList(RelationshipNode node, ChartLink chartLink) {
-        String startNode = node.getStartNode();
-        String endNode = node.getEndNode();
-        ResultDto startPro = NeoUtil.parseProduct(startNode);
-        ResultDto endPro = NeoUtil.parseProduct(endNode);
-        chartLink.setSource(startPro.getName());
-        chartLink.setDes(NeoUtil.getValueFromJsonString(node.getRelationship()));
-        chartLink.setTarget(endPro.getName());
-        chartLink.setName(NeoUtil.getValueFromJsonString(node.getRelationship()));
-    }
-
-    private void setRelaList(RelationshipNode node, Set<ChartNode> chartNodeSet) {
-        String startNode = node.getStartNode();
-        String endNode = node.getEndNode();
-        ResultDto startPro = NeoUtil.parseProduct(startNode);
-        ResultDto endPro = NeoUtil.parseProduct(endNode);
-        ChartNode startCharNode = new ChartNode();
-        ChartNode endCharNode = new ChartNode();
-        startCharNode.setName(startPro.getName());
-        startCharNode.setDes(startPro.getIdentity());
-        startCharNode.setCategory(selectionLevel(startPro.getLevel()));
-        startCharNode.setSymbolSize(selectionSize(startPro.getLevel()));
-
-        endCharNode.setName(endPro.getName());
-        endCharNode.setDes(endPro.getIdentity());
-        endCharNode.setCategory(selectionLevel(endPro.getLevel()));
-        endCharNode.setSymbolSize(selectionSize(endPro.getLevel()));
-        chartNodeSet.add(startCharNode);
-        chartNodeSet.add(endCharNode);
-    }
-
-
-    private Integer selectionLevel(String str) {
-        return switch (str) {
-            case "一级" -> 0;
-            case "二级" -> 1;
-            case "三级" -> 2;
-            case "四级" -> 3;
-            default -> 0;
-        };
-    }
-
-    private Integer selectionSize(String str) {
-        return switch (str) {
-            case "一级" -> 60;
-            case "二级" -> 55;
-            case "三级" -> 50;
-            case "四级" -> 45;
-            default -> 40;
-        };
+        return Results.ok();
     }
 
 

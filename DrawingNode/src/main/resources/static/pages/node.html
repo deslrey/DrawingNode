@@ -20,10 +20,12 @@
         <ul>
             <li>
                 <label>
-                    <el-input placeholder="输入案件号" v-model="caseObject.caseNumber" class="nav-input"></el-input>
-                    <el-input placeholder="输入被查询人名" v-model="caseObject.caseName" class="nav-input"></el-input>
+                    <el-input placeholder="输入案件号" v-model="caseObject.caseNumber" class="nav-input"
+                              clearable></el-input>
+                    <el-input placeholder="输入被查询人名" v-model="caseObject.caseName" class="nav-input"
+                              clearable></el-input>
                     <el-input placeholder="输入被查询人身份证" v-model="caseObject.caseCardId"
-                              class="nav-input"></el-input>
+                              class="nav-input" clearable></el-input>
                 </label>
                 <el-button type="primary" @click="fetchDataByInput" class="nav-button">查询</el-button>
             </li>
@@ -60,7 +62,9 @@
             },
             caseNumbers: [],
             chartInstance: null,
-            selectedCaseNumber: ''
+            selectedCaseNumber: '',
+            caseTitle: '',
+            code: 200
         },
         computed: {
             hasData() {
@@ -93,17 +97,25 @@
                 })
                     .then(response => {
                         console.log('fetchDataByInput--------', response)
-                        const data = response.data.data;
-                        this.echartsData.chartData = data.nodes;
-                        this.echartsData.links = data.links;
-                        this.echartsData.categories = data.categories;
+                        const data = response.data;
+
+                        if (data.code !== this.code) {
+                            this.$message.error(data.message);
+                            return
+                        }
+                        this.echartsData.chartData = data.data.nodes;
+                        this.echartsData.links = data.data.links;
+                        this.echartsData.categories = data.data.categories;
+                        this.caseTitle = this.caseTitleName(this.caseObject.caseNumber);
                         this.$nextTick(() => {
                             this.initChart();
                             this.resizeChart();
                         });
+                        this.queryOpen('成功', this.caseObject.caseNumber + '查询成功', 'success')
                     })
                     .catch(error => {
-                        this.$message.error("Error fetching data by input: " + error);
+                        console.log('fetchDataByInput--------', error)
+                        this.$message.error("服务器异常: " + error);
                     });
             },
 
@@ -118,20 +130,41 @@
                     }
                 }).then(response => {
                     console.log('getCaseNumberData--------', response)
-                    const data = response.data.data;
-                    this.echartsData.chartData = data.nodes;
-                    this.echartsData.links = data.links;
-                    this.echartsData.categories = data.categories;
+                    const data = response.data;
+                    console.log('131------------', data)
+                    if (data.code !== this.code) {
+                        this.$message.error(data.message);
+                        return
+                    }
+                    this.echartsData.chartData = data.data.nodes;
+                    this.echartsData.links = data.data.links;
+                    this.echartsData.categories = data.data.categories;
+                    this.caseTitle = this.caseTitleName(this.selectedCaseNumber);
                     this.$nextTick(() => {
                         this.initChart();
                         this.resizeChart();
                     });
+                    this.queryOpen('成功', this.selectedCaseNumber + '查询成功', 'success')
                 })
                     .catch(error => {
+                        console.log('getCaseNumberData--------', error)
                         this.$message.error("服务器异常: " + error);
                     });
 
             },
+
+            caseTitleName(caseNumber) {
+                return caseNumber + '关系图'
+            },
+
+            queryOpen(title, message, type) {
+                this.$notify({
+                    title: title,
+                    message: message,
+                    type: type
+                });
+            },
+
 
             initChart() {
                 if (!this.echartsData.chartData || !this.echartsData.categories) return;
@@ -141,7 +174,7 @@
                 var option = {
                     backgroundColor: '#fff',
                     title: {
-                        text: 'ECharts 关系图',
+                        text: this.caseTitle,
                         textStyle: {
                             color: '#000',
                             fontSize: '30',
