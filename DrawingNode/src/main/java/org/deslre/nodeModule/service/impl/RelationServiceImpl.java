@@ -1,6 +1,7 @@
 package org.deslre.nodeModule.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.deslre.nodeModule.chartNode.ChartDataResponse;
 import org.deslre.nodeModule.dto.ResultDto;
 import org.deslre.nodeModule.entity.CaseTableEntity;
 import org.deslre.nodeModule.entity.RelationEntity;
@@ -8,6 +9,7 @@ import org.deslre.nodeModule.repository.CaseTableRepository;
 import org.deslre.nodeModule.repository.RelationRepository;
 import org.deslre.nodeModule.service.RelationService;
 import org.deslre.nodeModule.vo.RelationVo;
+import org.deslre.result.CaseObject;
 import org.deslre.utils.ExtraUtil;
 import org.deslre.utils.NeoUtil;
 import org.deslre.result.ResultCodeEnum;
@@ -72,6 +74,11 @@ public class RelationServiceImpl implements RelationService {
         Set<String> keySet = caseAllMap.keySet();
         list.addAll(keySet);
         return Results.ok(list);
+    }
+
+    @Override
+    public Results<ChartDataResponse> getAllRelationshipsCaseNumber(CaseObject caseObject) {
+        return Results.ok(new ChartDataResponse());
     }
 
 

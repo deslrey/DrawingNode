@@ -29,12 +29,13 @@
             </li>
             <li>
                 <label>
-                    <el-select v-model="selectedCaseNumber" placeholder="选择已有案件号" class="nav-select" clearable>
+                    <el-select v-model="selectedCaseNumber" placeholder="选择已有案件号" class="nav-select"
+                               clearable>
                         <el-option v-for="caseNum in caseNumbers" :key="caseNum" :label="caseNum"
                                    :value="caseNum"></el-option>
                     </el-select>
                 </label>
-                <el-button type="primary" @click="fetchChartData" class="nav-button">查询</el-button>
+                <el-button type="primary" @click="getCaseNumberData" class="nav-button">查询</el-button>
             </li>
         </ul>
     </nav>
@@ -58,8 +59,8 @@
                 links: null,
             },
             caseNumbers: [],
-            selectedCaseNumber: '',
-            chartInstance: null
+            chartInstance: null,
+            selectedCaseNumber: ''
         },
         computed: {
             hasData() {
@@ -71,22 +72,6 @@
             window.addEventListener('resize', this.resizeChart);
         },
         methods: {
-            fetchChartData() {
-                axios.get('/chart/data')
-                    .then(response => {
-                        const data = response.data.data;
-                        this.echartsData.chartData = data.nodes;
-                        this.echartsData.links = data.links;
-                        this.echartsData.categories = data.categories;
-                        this.$nextTick(() => {
-                            this.initChart();
-                            this.resizeChart();
-                        });
-                    })
-                    .catch(error => {
-                        this.$message.error("Error fetching chart data: " + error);
-                    });
-            },
             fetchAllCaseNumbers() {
                 axios.get('/operation/allCase')
                     .then(response => {
@@ -107,6 +92,7 @@
                     }
                 })
                     .then(response => {
+                        console.log('fetchDataByInput--------', response)
                         const data = response.data.data;
                         this.echartsData.chartData = data.nodes;
                         this.echartsData.links = data.links;
@@ -120,26 +106,33 @@
                         this.$message.error("Error fetching data by input: " + error);
                     });
             },
-            fetchDataByDropdown() {
-                if (!this.selectedCaseNumber) {
-                    this.$message.warning('请选择一个案件号');
+
+            getCaseNumberData() {
+                if (this.selectedCaseNumber === '') {
+                    this.$message.warning('请选择案件号');
                     return;
                 }
-                axios.get(`/operation/inquire/${this.selectedCaseNumber}`)
-                    .then(response => {
-                        const data = response.data.data;
-                        this.echartsData.chartData = data.nodes;
-                        this.echartsData.links = data.links;
-                        this.echartsData.categories = data.categories;
-                        this.$nextTick(() => {
-                            this.initChart();
-                            this.resizeChart();
-                        });
-                    })
-                    .catch(error => {
-                        this.$message.error("Error fetching data by dropdown: " + error);
+                axios.post(`/operation/inquire/${this.selectedCaseNumber}`, {
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    }
+                }).then(response => {
+                    console.log('getCaseNumberData--------', response)
+                    const data = response.data.data;
+                    this.echartsData.chartData = data.nodes;
+                    this.echartsData.links = data.links;
+                    this.echartsData.categories = data.categories;
+                    this.$nextTick(() => {
+                        this.initChart();
+                        this.resizeChart();
                     });
+                })
+                    .catch(error => {
+                        this.$message.error("服务器异常: " + error);
+                    });
+
             },
+
             initChart() {
                 if (!this.echartsData.chartData || !this.echartsData.categories) return;
 

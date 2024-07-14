@@ -1,5 +1,6 @@
 package org.deslre.nodeModule.controller;
 
+import org.deslre.nodeModule.chartNode.ChartDataResponse;
 import org.deslre.nodeModule.service.RelationService;
 import org.deslre.result.CaseObject;
 import org.deslre.result.ResultCodeEnum;
@@ -20,16 +21,25 @@ public class OperationController {
     private RelationService relationService;
 
     @PostMapping("/inquire")
-    public Results<String> addAllCorrespondingCases(@RequestBody CaseObject caseObject) {
+    public Results<ChartDataResponse> getAllRelationshipsCaseNumber(@RequestBody CaseObject caseObject) {
 
+        if (isEmpty(caseObject)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
         System.out.println("caseObject = " + caseObject);
+        return relationService.getAllRelationshipsCaseNumber(caseObject);
+    }
 
-        return Results.ok("aa");
 
-//        if (isEmpty(caseNumber)) {
-//            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
-//        }
-//        return relationService.addAllCorrespondingCases(caseNumber);
+    @PostMapping("/inquire/{caseNumber}")
+    public Results<ChartDataResponse> getCaseNumberData(@PathVariable String caseNumber) {
+        if (isEmpty(caseNumber)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
+        System.out.println("caseNumber = " + caseNumber);
+
+        return Results.ok();
+
     }
 
     @GetMapping("/allCase")
