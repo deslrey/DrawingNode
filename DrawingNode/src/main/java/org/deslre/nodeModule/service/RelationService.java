@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface RelationService {
 
-    Results<String> addAllCorrespondingCases(String caseNumber);
+    Results<String> addAllCorrespondingCases(final String caseNumber);
 
     Results<List<String>> getAllCaseNumbers();
 
-    Results<ChartDataResponse> getAllRelationshipsCaseNumber(CaseObject caseObject);
+    Results<ChartDataResponse> getAllRelationshipsCaseNumber(final CaseObject caseObject);
 
-    Results<ChartDataResponse> getCaseNumberData(String caseNumber);
+    Results<ChartDataResponse> getCaseNumberData(final String caseNumber);
 }

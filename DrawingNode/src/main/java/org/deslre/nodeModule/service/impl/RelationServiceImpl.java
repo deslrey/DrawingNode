@@ -49,7 +49,7 @@ public class RelationServiceImpl implements RelationService {
     private ExtraUtil extraUtil;
 
     @Override
-    public Results<String> addAllCorrespondingCases(String caseNumber) {
+    public Results<String> addAllCorrespondingCases(final String caseNumber) {
         if (isEmpty(caseNumber)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
@@ -82,12 +82,34 @@ public class RelationServiceImpl implements RelationService {
     }
 
     @Override
-    public Results<ChartDataResponse> getAllRelationshipsCaseNumber(CaseObject caseObject) {
-        return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+    public Results<ChartDataResponse> getAllRelationshipsCaseNumber(final CaseObject caseObject) {
+        if (isEmpty(caseObject)) {
+            return Results.fail(ResultCodeEnum.EMPTY_VALUE);
+        }
+
+        Results<List<RelationshipNode>> results = neoUtil.getAllRelationships(caseObject.getCaseNumber());
+        if (!Objects.equals(results.getCode(), FinalUtil.CODE)) {
+            return Results.fail(results.getMessage());
+        }
+        if (results.getData() == null || results.getData().isEmpty()) {
+            return Results.fail("该案号暂无数据");
+        }
+
+        List<RelationshipNode> nodeList = results.getData();
+        List<ChartNode> nodes = extraUtil.generateNodes(nodeList, caseObject);
+        List<ChartLink> links = extraUtil.generateLinks(nodeList);
+        List<ChartCategory> categories = extraUtil.generateCategories(nodeList);
+
+        ChartDataResponse chartData = new ChartDataResponse();
+        chartData.setNodes(nodes);
+        chartData.setLinks(links);
+        chartData.setCategories(categories);
+
+        return Results.ok(chartData);
     }
 
     @Override
-    public Results<ChartDataResponse> getCaseNumberData(String caseNumber) {
+    public Results<ChartDataResponse> getCaseNumberData(final String caseNumber) {
         if (isEmpty(caseNumber)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
@@ -118,8 +140,6 @@ public class RelationServiceImpl implements RelationService {
         list.forEach(caseTable -> {
             caseAllMap.put(caseTable.getCaseNumber(), true);
         });
-//        caseAllMap.put("", true);
-        log.info("编号更新完成");
     }
 
     private void updateCaseMap() {

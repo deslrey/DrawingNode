@@ -16,6 +16,8 @@ public class FinalUtil {
 
     public static final String[] SYMBOL = new String[]{"none", "arrow"};
 
+    public static final String HIGHLIGHT_COLOR = "#EE4E6F";
+
     static {
         ARROW = new ArrayList<>(15);
         ARROW.add("名下");

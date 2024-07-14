@@ -4,9 +4,11 @@ import cn.hutool.core.bean.BeanUtil;
 import org.deslre.nodeModule.chartNode.ChartCategory;
 import org.deslre.nodeModule.chartNode.ChartLink;
 import org.deslre.nodeModule.chartNode.ChartNode;
+import org.deslre.nodeModule.chartNode.ItemStyle;
 import org.deslre.nodeModule.dto.*;
 import org.deslre.nodeModule.repository.*;
 import org.deslre.nodeModule.vo.RelationshipNode;
+import org.deslre.result.CaseObject;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -95,6 +97,16 @@ public class ExtraUtil {
         return new ArrayList<>(chartNodeSet);
     }
 
+    public List<ChartNode> generateNodes(List<RelationshipNode> nodeList, CaseObject caseObject) {
+        Set<ChartNode> chartNodeSet = new HashSet<>(nodeList.size());
+        for (RelationshipNode node : nodeList) {
+            setRelaList(node, chartNodeSet, caseObject);
+        }
+
+        return new ArrayList<>(chartNodeSet);
+    }
+
+
     private void setRelaList(RelationshipNode node, ChartLink chartLink) {
         String startNode = node.getStartNode();
         String endNode = node.getEndNode();
@@ -109,6 +121,7 @@ public class ExtraUtil {
         }
         chartLink.setName(inform);
     }
+
 
     private void setRelaList(RelationshipNode node, Set<ChartNode> chartNodeSet) {
         String startNode = node.getStartNode();
@@ -128,6 +141,45 @@ public class ExtraUtil {
         endCharNode.setSymbolSize(selectionSize(endPro.getLevel()));
         chartNodeSet.add(startCharNode);
         chartNodeSet.add(endCharNode);
+    }
+
+    private void setRelaList(RelationshipNode node, Set<ChartNode> chartNodeSet, CaseObject caseObject) {
+        String startNode = node.getStartNode();
+        String endNode = node.getEndNode();
+        ResultDto startPro = NeoUtil.parseProduct(startNode);
+        ResultDto endPro = NeoUtil.parseProduct(endNode);
+        ChartNode startCharNode = new ChartNode();
+        ChartNode endCharNode = new ChartNode();
+        startCharNode.setName(startPro.getName());
+        startCharNode.setDes(startPro.getIdentity());
+        startCharNode.setCategory(selectionLevel(startPro.getLevel()));
+        startCharNode.setSymbolSize(selectionSize(startPro.getLevel()));
+        if (highlight(startPro, caseObject)) {
+            startCharNode.setItemStyle(new ItemStyle(FinalUtil.HIGHLIGHT_COLOR));
+        }
+
+        endCharNode.setName(endPro.getName());
+        endCharNode.setDes(endPro.getIdentity());
+        endCharNode.setCategory(selectionLevel(endPro.getLevel()));
+        endCharNode.setSymbolSize(selectionSize(endPro.getLevel()));
+        if (highlight(endPro, caseObject)) {
+            endCharNode.setItemStyle(new ItemStyle(FinalUtil.HIGHLIGHT_COLOR));
+        }
+        chartNodeSet.add(startCharNode);
+        chartNodeSet.add(endCharNode);
+    }
+
+
+    public boolean highlight(ResultDto resultDto, CaseObject caseObject) {
+        if (StringUtil.isEmpty(caseObject.getCaseName())) {
+            return resultDto.getCardId() != null && resultDto.getCardId().equals(caseObject.getCaseCardId());
+        } else if (StringUtil.isEmpty(caseObject.getCaseCardId())) {
+            return resultDto.getName().equals(caseObject.getCaseName());
+        } else {
+            if (resultDto.getName().equals(caseObject.getCaseName()))
+                return resultDto.getCardId() != null && resultDto.getCardId().equals(caseObject.getCaseCardId());
+            return false;
+        }
     }
 
     private Integer selectionLevel(String str) {

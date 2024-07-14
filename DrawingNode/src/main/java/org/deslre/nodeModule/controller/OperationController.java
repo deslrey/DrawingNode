@@ -22,11 +22,9 @@ public class OperationController {
 
     @PostMapping("/inquire")
     public Results<ChartDataResponse> getAllRelationshipsCaseNumber(@RequestBody CaseObject caseObject) {
-
         if (isEmpty(caseObject)) {
             return Results.fail(ResultCodeEnum.EMPTY_VALUE);
         }
-        System.out.println("caseObject = " + caseObject);
         return relationService.getAllRelationshipsCaseNumber(caseObject);
     }
 

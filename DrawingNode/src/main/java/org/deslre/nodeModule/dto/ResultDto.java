@@ -6,7 +6,7 @@ import lombok.Data;
 public class ResultDto {
     private Long id;
     private Integer nodeId;
-    private Integer cardId;
+    private String cardId;
     private String name;
     private String identity;
     private String level;
