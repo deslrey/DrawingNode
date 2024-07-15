@@ -2,7 +2,6 @@ package org.deslre.common.helper;
 
 import io.jsonwebtoken.*;
 import org.deslre.common.utils.StringUtil;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
