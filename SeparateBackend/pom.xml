@@ -21,9 +21,6 @@
     <developers>
         <developer/>
     </developers>
-    <modules>
-        <module>common/common_util</module>
-    </modules>
     <scm>
         <connection/>
         <developerConnection/>
@@ -76,6 +73,24 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-json</artifactId>
             <version>5.7.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.1</version>
         </dependency>
 
     </dependencies>
