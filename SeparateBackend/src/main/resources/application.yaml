@@ -1,16 +1,14 @@
 server:
   port: 81
 
-
 spring:
   application:
     name: SeparateBackend
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/deslre?useSSL=false&serverTimezone=UTC
     username: root
     password: 200381
-
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/deslre?useSSL=false&serverTimezone=UTC
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,4 +19,3 @@ spring:
     authentication:
       username: neo4j
       password: 200381
-
