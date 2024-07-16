@@ -45,15 +45,15 @@ public class UserService {
             }
         }
 
-        if (isEmpty(loginFormDTO.getUserName()) || isEmpty(loginFormDTO.getPassWord())) {
+        if (isEmpty(loginFormDTO.getUsername()) || isEmpty(loginFormDTO.getPassword())) {
             return Results.fail("账号/密码为空");
         }
 
-        User user = userRepository.findUserByNickName(loginFormDTO.getUserName());
+        User user = userRepository.findUserByNickName(loginFormDTO.getUsername());
         if (user == null) {
             return Results.fail("用户不存在");
         }
-        String passWord = MD5.encrypt(loginFormDTO.getPassWord());
+        String passWord = MD5.encrypt(loginFormDTO.getPassword());
         if (passWord.equals(user.getPassWord())) {
             String token = JwtHelper.createToken(user.getNickName(), user.getPassWord());
             return Results.ok(token);
@@ -66,7 +66,7 @@ public class UserService {
     public Results<LoginFormDTO> currUser(String clientToken) {
         String userName = JwtHelper.getUserName(clientToken);
         LoginFormDTO loginFormDTO = new LoginFormDTO();
-        loginFormDTO.setUserName(userName);
+        loginFormDTO.setUsername(userName);
         return Results.ok(loginFormDTO);
     }
 }

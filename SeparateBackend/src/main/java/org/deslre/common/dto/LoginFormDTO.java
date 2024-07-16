@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class LoginFormDTO {
-    private String userName;
-    private String passWord;
+    private String username;
+    private String password;
     private String verificationCode;
 }
