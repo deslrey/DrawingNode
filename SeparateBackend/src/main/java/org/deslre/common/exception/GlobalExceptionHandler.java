@@ -15,10 +15,10 @@ public class GlobalExceptionHandler {
         return Results.fail();
     }
 
-    @ExceptionHandler(DeslreException.class)
     @ResponseBody
+    @ExceptionHandler(DeslreException.class)
     public Results<String> error(DeslreException e) {
         e.printStackTrace();
-        return Results.fail();
+        return Results.fail(e.getResultCodeEnum());
     }
 }

@@ -1,5 +1,7 @@
 server:
   port: 81
+  servlet:
+    context-path: /deslre
 
 spring:
   application:
@@ -13,7 +15,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
   neo4j:
     uri: bolt://192.168.1.26:7687
     authentication:
