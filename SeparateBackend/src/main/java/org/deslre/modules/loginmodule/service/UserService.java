@@ -62,4 +62,11 @@ public class UserService {
         }
 
     }
+
+    public Results<LoginFormDTO> currUser(String clientToken) {
+        String userName = JwtHelper.getUserName(clientToken);
+        LoginFormDTO loginFormDTO = new LoginFormDTO();
+        loginFormDTO.setUserName(userName);
+        return Results.ok(loginFormDTO);
+    }
 }
