@@ -4,7 +4,7 @@
       label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">Login</h3>
       </div>
 
       <el-form-item prop="username">
@@ -25,7 +25,6 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;"
         @click.native.prevent="handleLogin">Login</el-button>
 
@@ -38,6 +37,7 @@ import { validUsername } from '@/utils/validate'
 
 export default {
   name: 'Login',
+  // 验证码后台接口
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -56,7 +56,8 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '111111',
+        verificationCode: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -123,6 +124,8 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
+
+
   .el-input {
     display: inline-block;
     height: 47px;
@@ -160,10 +163,18 @@ $dark_gray: #889aa4;
 $light_gray: #eee;
 
 .login-container {
-  min-height: 100%;
+  // min-height: 100%;
+  // width: 100%;
+  // background-color: $bg;
+  // overflow: hidden;
   width: 100%;
-  background-color: $bg;
-  overflow: hidden;
+  height: 100%;
+  background-image: url("../../assets/login_images/login.webp");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+
+
 
   .login-form {
     position: relative;

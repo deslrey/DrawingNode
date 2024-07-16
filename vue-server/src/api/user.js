@@ -22,3 +22,11 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function getCaptchaImage() {
+  return request({
+    url: '/captcha/captchaImage',
+    method: 'get',
+  })
+}
+
