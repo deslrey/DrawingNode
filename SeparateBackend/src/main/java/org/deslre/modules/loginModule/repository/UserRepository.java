@@ -1,6 +1,6 @@
-package org.deslre.modules.loginmodule.repository;
+package org.deslre.modules.loginModule.repository;
 
-import org.deslre.modules.loginmodule.entity.User;
+import org.deslre.modules.loginModule.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

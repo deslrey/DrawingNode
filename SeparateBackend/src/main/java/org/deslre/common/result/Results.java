@@ -26,14 +26,14 @@ public class Results<T> {
         return results;
     }
 
-    public static <T> Results<T> build(T body, Integer code, String message) {
+    protected static <T> Results<T> build(T body, Integer code, String message) {
         Results<T> results = build(body);
         results.setCode(code);
         results.setMessage(message);
         return results;
     }
 
-    public static <T> Results<T> build(T body, ResultCodeEnum resultCodeEnum) {
+    protected static <T> Results<T> build(T body, ResultCodeEnum resultCodeEnum) {
         Results<T> results = build(body);
         results.setCode(resultCodeEnum.getCode());
         results.setMessage(resultCodeEnum.getMessage());

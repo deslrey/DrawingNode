@@ -1,4 +1,4 @@
-package org.deslre.modules.loginmodule.controller;
+package org.deslre.modules.loginModule.controller;
 
 import com.google.code.kaptcha.Producer;
 import org.deslre.common.utils.FinalUtil;

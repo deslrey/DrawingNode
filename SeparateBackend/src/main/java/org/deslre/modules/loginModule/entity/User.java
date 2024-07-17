@@ -1,4 +1,4 @@
-package org.deslre.modules.loginmodule.entity;
+package org.deslre.modules.loginModule.entity;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -13,7 +13,6 @@ import java.util.Objects;
 @Setter
 @Entity
 @ToString
-@RequiredArgsConstructor
 @DynamicUpdate
 @DynamicInsert
 @Table(name = "tb_user", schema = "deslre")

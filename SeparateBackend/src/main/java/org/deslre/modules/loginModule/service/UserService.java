@@ -1,25 +1,20 @@
-package org.deslre.modules.loginmodule.service;
+package org.deslre.modules.loginModule.service;
 
-import cn.hutool.core.bean.BeanUtil;
 import org.deslre.common.dto.LoginFormDTO;
-import org.deslre.common.dto.UserDTO;
-import org.deslre.common.exception.DeslreException;
 import org.deslre.common.helper.JwtHelper;
 import org.deslre.common.result.ResultCodeEnum;
 import org.deslre.common.result.Results;
 import org.deslre.common.utils.FinalUtil;
 import org.deslre.common.utils.MD5;
-import org.deslre.modules.loginmodule.entity.User;
-import org.deslre.modules.loginmodule.repository.UserRepository;
+import org.deslre.modules.loginModule.entity.User;
+import org.deslre.modules.loginModule.repository.UserRepository;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-import static org.deslre.common.utils.RedisConstants.LOGIN_USER_KEY;
-import static org.deslre.common.utils.RedisConstants.LOGIN_USER_TTL;
 import static org.deslre.common.utils.StringUtil.isEmpty;
 
 @Service
@@ -68,5 +63,10 @@ public class UserService {
         LoginFormDTO loginFormDTO = new LoginFormDTO();
         loginFormDTO.setUsername(userName);
         return Results.ok(loginFormDTO);
+    }
+
+    public Results< List<User>> getAllUser() {
+        List<User> list = userRepository.findAll();
+        return Results.ok(list);
     }
 }

@@ -1,12 +1,12 @@
 package org.deslre;
 
-import org.deslre.common.utils.MD5;
-import org.deslre.modules.loginmodule.entity.User;
-import org.deslre.modules.loginmodule.repository.UserRepository;
+import org.deslre.modules.loginModule.entity.User;
+import org.deslre.modules.loginModule.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @SpringBootTest
 class SeparateBackendApplicationTests {
@@ -39,7 +39,8 @@ class SeparateBackendApplicationTests {
 
     @Test
     void a() {
-        String encrypt = MD5.encrypt("111111");
-        System.out.println("encrypt = " + encrypt);
+        List<User> userList = userRepository.findAll();
+        System.out.println("userList = " + userList);
     }
+
 }

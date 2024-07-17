@@ -51,11 +51,22 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
+      meta: { title: '首页', icon: 'el-icon-s-custom' }
     }]
   },
 
-
+  {
+    path: '/file',
+    component: Layout,
+    children: [
+      {
+        path: 'uploadFiles',
+        name: 'UploadFiles',
+        component: () => import('@/views/file/uploadFiles'),
+        meta: { title: '上传文件', icon: 'el-icon-upload' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
