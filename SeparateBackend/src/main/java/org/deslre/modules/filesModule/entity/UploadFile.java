@@ -26,10 +26,10 @@ public class UploadFile {
     @Column(name = "relative_path", length = 128)
     private String relativePath;
 
-    @Column(name = "create_time", nullable = false)
+    @Column(name = "create_time", nullable = true)
     private Instant createTime;
 
-    @Column(name = "update_time", nullable = false)
+    @Column(name = "update_time", nullable = true)
     private Instant updateTime;
 
 }

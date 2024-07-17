@@ -1,6 +1,8 @@
 package org.deslre.modules.filesModule.controller;
 
+import org.deslre.common.result.ResultCodeEnum;
 import org.deslre.common.result.Results;
+import org.deslre.common.utils.StringUtil;
 import org.deslre.modules.filesModule.entity.PageEntity;
 import org.deslre.modules.filesModule.entity.UploadFile;
 import org.deslre.modules.filesModule.service.UploadFileService;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,18 +29,11 @@ public class UploadFileController {
      */
     @PostMapping("/page")
     public Results<Map<String, Object>> getFiles(@RequestBody PageEntity pageEntity) {
-        String searchKey = pageEntity.getSearchKey();
-        int pageNum = pageEntity.getPageNum();
-        int pageSize = pageEntity.getPageSize();
+        if (StringUtil.isEmpty(pageEntity)) {
+            return Results.fail(ResultCodeEnum.DATA_ERROR);
+        }
 
-        Page<UploadFile> filePage = uploadFileService.getFiles(searchKey, pageNum, pageSize);
-        Map<String, Object> response = new HashMap<>();
-        response.put("list", filePage.getContent());
-        response.put("total", filePage.getTotalElements());
-        response.put("pageNum", filePage.getNumber() + 1);
-        response.put("pageSize", filePage.getSize());
-
-        return Results.ok(response);
+        return uploadFileService.getFiles(pageEntity);
     }
 
 
@@ -46,8 +42,10 @@ public class UploadFileController {
      */
     @PostMapping("/save")
     public Results<UploadFile> saveFile(@RequestBody UploadFile file) {
-        UploadFile savedFile = uploadFileService.saveFile(file);
-        return Results.ok(savedFile);
+        if (StringUtil.isEmpty(file)) {
+            return Results.fail(ResultCodeEnum.DATA_ERROR);
+        }
+        return uploadFileService.saveFile(file);
     }
 
     /**
@@ -65,7 +63,7 @@ public class UploadFileController {
      */
     @PostMapping("/upload")
     public Results<Integer> upload(@RequestParam Map<String, Object> map, MultipartFile file) {
-        return uploadFileService.upload(map, file);
+        return uploadFileService.upload(map , file);
     }
 
 }

@@ -40,15 +40,18 @@
         <el-dialog :visible.sync="showPictureDigLog" title="新增/编辑">
             <el-form label-width="120px">
                 <el-form-item label="标题">
-                    <el-input type="text" size="mini" placeholder="请输入标题" v-model="picture.file_name"></el-input>
+                    <el-input type="text" size="mini" placeholder="请输入标题" v-model="picture.fileName"></el-input>
                 </el-form-item>
                 <el-form-item label="文件">
-                    <el-image v-if="editPicture" style="width: 200px" :src="src_url + picture.relative_path"></el-image>
+                    <!-- <el-image v-if="editPicture" style="width: 200px" :src="src_url + picture.relative_path"></el-image> -->
+
                     <el-upload class="upload-demo" ref="upload" :action="uploadUrl" :data="uploadDataParam"
                         :before-upload="checkFileType" accept="*" :auto-upload="false">
                         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
                         <div slot="tip" class="el-upload__tip">只能上传不超过5M</div>
                     </el-upload>
+
+
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -71,19 +74,19 @@ export default {
     data() {
         return {
             searchInfo: { searchKey: '' },
-            filePage: { pageNum: 1, pageSize: 2, list: [] },
+            filePage: { pageNum: 1, pageSize: 10, list: [] },
             showPictureDigLog: false,
             picture: {},
             uploadUrl: '',
             uploadDataParam: {},
-            src_url: 'http://127.0.0.1:8345/springbootajax/',
+            src_url: 'http://127.0.0.1:81/deslre/uploadFile/upload',
             editPicture: false
         };
     },
     watch: {
         '$route.path': {
             handler: function (newVal) {
-                if (newVal == '/picture-list') {
+                if (newVal == '/file/uploadFiles') {
                     this.initData();
                 }
             }, immediate: true
@@ -91,7 +94,7 @@ export default {
     },
     mounted() {
         this.uploadUrl = 'http://localhost:81/deslre/uploadFile/upload';
-        this.initData();
+        // this.initData();
     },
     methods: {
         initData() {
@@ -132,8 +135,9 @@ export default {
         },
         clkBtnSave() {
             let data = this.picture;
+            console.log('clkBtnSave ----- > ', data);
             uploadFiles.clkBtnSave(data).then(response => {
-                this.uploadDataParam.noid = response.data;
+                this.uploadDataParam = response.data;
                 this.submitUpload();
                 this.showPictureDigLog = false;
                 this.getPictureList();
@@ -143,12 +147,13 @@ export default {
 
         //保存表单提交
         submitUpload() {
+            console.log('submitUpload ------> ', this.uploadDataParam);
             this.$refs.upload.submit();
 
         },
         clkBtnDelete(row) {
             this.$confirm("您确信要删除吗？", "提示").then(() => {
-                let data = { noid: row.noid };
+                let data = { id: row.id };
 
                 uploadFiles.clkBtnDelete(data).then(response => {
                     this.getPictureList();
