@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class FileUtils {
 
-    public static String upload(MultipartFile file, String uploadPath) throws IOException {
+    public static String upload(MultipartFile file, String uploadPath, String fileName) throws IOException {
 
         String finalFileName = "";
         if (file.getSize() > 0) {
@@ -37,7 +37,7 @@ public class FileUtils {
             Integer rndNum = new Random().nextInt(1000) + 9000;
 
             //拼接随机数字和后缀名
-            finalFileName += rndNum + extName;
+            finalFileName += rndNum + "-" + fileName + extName;
 
             //目标文件
             File f1 = new File(uploadPath + File.separator + finalFileName);

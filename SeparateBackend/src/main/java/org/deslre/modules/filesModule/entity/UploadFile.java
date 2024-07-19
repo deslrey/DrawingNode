@@ -12,7 +12,6 @@ import java.time.Instant;
 @Setter
 @Entity
 @DynamicUpdate
-@DynamicInsert
 @Table(name = "upload_files")
 public class UploadFile {
     @Id

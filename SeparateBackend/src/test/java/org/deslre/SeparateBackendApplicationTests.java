@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.List;
 
 @SpringBootTest
@@ -39,8 +40,10 @@ class SeparateBackendApplicationTests {
 
     @Test
     void a() {
-        List<User> userList = userRepository.findAll();
-        System.out.println("userList = " + userList);
+        String path = "C:\\Users\\肖鑫欢\\Desktop\\avatar.jpg";
+        File file = new File(path);
+        Pic pic = Pic.create(file);
+        System.out.println("pic = " + pic);
     }
 
 }

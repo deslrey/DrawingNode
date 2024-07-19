@@ -51,6 +51,13 @@ public class Results<T> {
         return build(data, ResultCodeEnum.SUCCESS);
     }
 
+    /**
+     * 操作成功
+     */
+    public static <T> Results<T> ok(String message) {
+        return build(null, 200, message);
+    }
+
 
     /**
      * 操作失败

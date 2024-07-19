@@ -37,27 +37,26 @@
                 :total="filePage.total" layout="total,prev,pager,next" @current-change="chgPageNum">
             </el-pagination>
         </div>
-        <el-dialog :visible.sync="showPictureDigLog" title="新增/编辑">
-            <el-form label-width="120px">
-                <el-form-item label="标题">
-                    <el-input type="text" size="mini" placeholder="请输入标题" v-model="picture.fileName"></el-input>
+        <el-dialog title="新增/修改文件信息" :visible.sync="dialogVisible1">
+            <el-form ref="importFormRef" :model="importForm" :rules="rules" label-width="130px">
+                <el-form-item label="文件名" prop="fileName">
+                    <el-input v-model="importForm.fileName"></el-input>
                 </el-form-item>
-                <el-form-item label="文件">
-                    <!-- <el-image v-if="editPicture" style="width: 200px" :src="src_url + picture.relative_path"></el-image> -->
+                <el-form-item label="上传文件:" prop="excel">
 
-                    <el-upload class="upload-demo" ref="upload" :action="uploadUrl" :data="uploadDataParam"
-                        :before-upload="checkFileType" accept="*" :auto-upload="false">
-                        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传不超过5M</div>
+                    <el-upload ref="uploadTxt" style="display: inline;" action :show-file-list="false"
+                        :http-request="uploadFile" :file-list="fileList" :limit="1" :on-exceed="handleExceed"
+                        :before-upload="beforeUpload" :onError="uploadError">
+                        <el-button icon="el-icon-upload" type="primary">文件上传
+                        </el-button>
                     </el-upload>
 
-
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitImportForm">确认</el-button>
+                    <el-button type="info" @click="dialogVisible1 = false">取消</el-button>
                 </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button type="primary" size="mini" @click="clkBtnSave">确定</el-button>
-                <el-button type="warning" size="mini" @click="showPictureDigLog = false">取消</el-button>
-            </span>
         </el-dialog>
 
 
@@ -65,7 +64,7 @@
 </template>
 
 <script>
-import uploadFiles from '@/api/uploadFiles'
+import uploadFiles from '@/api/file/uploadFiles'
 import moment from 'moment'
 
 export default {
@@ -75,12 +74,24 @@ export default {
         return {
             searchInfo: { searchKey: '' },
             filePage: { pageNum: 1, pageSize: 10, list: [] },
-            showPictureDigLog: false,
             picture: {},
             uploadUrl: '',
             uploadDataParam: {},
             src_url: 'http://127.0.0.1:81/deslre/uploadFile/upload',
-            editPicture: false
+            editPicture: false,
+            //对话框控制权
+            dialogVisible1: false,
+            //导入表单数据
+            importForm: {
+                fileName: '',
+            },
+            uploadUrl: 'http://localhost:8080/upload',
+            //存放上传文件
+            fileList: [],
+            rules: {
+                fileName: [{ required: true, message: '请输入名称', trigger: 'blur' }],
+                excel: [{ required: true, message: '请上传文件', trigger: 'blur' }],
+            }
         };
     },
     watch: {
@@ -116,33 +127,12 @@ export default {
         },
         clkBtnAdd() {
             this.picture = {};
-            this.showPictureDigLog = true;
+            this.dialogVisible1 = true;
         },
         clkBtnEdit(row) {
             this.picture = JSON.parse(JSON.stringify(row));
             this.editPicture = true;
-            this.showPictureDigLog = true;
-        },
-        checkFileType(file) {
-            let imgSize = file.size / 1024 / 1024;
-            console.log("文件类型:" + file.type);
-            console.log("文件大小：" + imgSize)
-            if (imgSize > 5) {
-                this.$message("文件超出规定上传大小，请重新上传文件！")
-                return false;
-            }
-            //png/jpg/gif/bmp
-        },
-        clkBtnSave() {
-            let data = this.picture;
-            console.log('clkBtnSave ----- > ', data);
-            uploadFiles.clkBtnSave(data).then(response => {
-                this.uploadDataParam = response.data;
-                this.submitUpload();
-                this.showPictureDigLog = false;
-                this.getPictureList();
-                this.$message("保存成功~")
-            })
+            this.dialogVisible1 = true;
         },
 
         //保存表单提交
@@ -154,14 +144,20 @@ export default {
         clkBtnDelete(row) {
             this.$confirm("您确信要删除吗？", "提示").then(() => {
                 let data = { id: row.id };
-
+                console.log('clkBtnDelete ------> ', this.data);
                 uploadFiles.clkBtnDelete(data).then(response => {
                     this.getPictureList();
-                    this.$message("删除成功~");
+                    this.$message({
+                        message: "删除成功~",
+                        type: 'success'
+                    })
                 })
 
             }).catch(() => {
-                this.$message("取消删除~");
+                this.$message({
+                    message: "取消删除~",
+                    type: 'warning'
+                })
             })
         },
         chgPageNum(pageNum) {
@@ -173,7 +169,60 @@ export default {
         },
         formatDate(date) {
             return moment(date).format('YYYY-MM-DD HH:mm:ss');
-        }
+        },
+
+        //限制文件上传的数量，:limit="1"
+        handleExceed(files, fileList) {
+            this.$message.error("文件超出限制，请重试！");
+        },
+
+        //上传失败提示
+        uploadError(response, file, fileList) {
+            this.$message.error("上传失败，请重试！");
+        },
+
+        //上传前限制文件类型，文件大小
+        beforeUpload(file) {
+            let namestrarr = file.name.split(".");
+            let fileLastname = namestrarr[namestrarr.length - 1].toLowerCase();
+            const extension = fileLastname === "txt";
+            const isLt2M = file.size / 1024 / 1024 < 20;
+            if (!extension) {
+                this.$message.warning("上传文件只能是 txt 格式!");
+            }
+            if (!isLt2M) {
+                console.log("上传附件大小不能超过 2MB!");
+                this.$message.warning("上传附件大小不能超过 2MB!");
+            }
+            this.uploadFileName = file.name;
+            this.fileSuffixType = fileLastname;
+            return isLt2M && extension;
+        },
+
+        //上传文件
+        uploadFile(item) {
+            let formData = new FormData();
+            formData.append("files", item.file);
+            uploadFiles.addFile(formData).then(response => {
+                this.$refs.uploadTxt.clearFiles();  //清空上传的文件缓存
+                this.parsingFile(response.data.filePath)//文件数据解析入库，如果只是上传文件就不需要
+            })
+                .catch(err => {
+                    this.$refs.uploadTxt.clearFiles();
+                    this.$message.error(err);
+                })
+        },
+
+        //文件解析入库
+        parsingFile(path) {
+            uploadFiles.importData({ path: path }).then(response => {
+                if (response.data === true) {
+                    this.$message.success("数据导入成功");
+                } else {
+                    this.$message.error("数据导入失败！");
+                }
+            })
+        },
     },
 };
 </script>

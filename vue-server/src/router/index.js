@@ -5,6 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+import { title } from '@/settings'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -58,12 +59,21 @@ export const constantRoutes = [
   {
     path: '/file',
     component: Layout,
+    redirect: '/file/uploadFiles',
+    name: 'File',
+    meta: { title: '文件上传', icon: 'el-icon-s-help' },
     children: [
       {
         path: 'uploadFiles',
         name: 'UploadFiles',
         component: () => import('@/views/file/uploadFiles'),
-        meta: { title: '上传文件', icon: 'el-icon-upload' }
+        meta: { title: '单个文件文件', icon: 'el-icon-upload' }
+      },
+      {
+        path: 'batchFiles',
+        name: 'BatchFiles',
+        component: () => import('@/views/file/batchFiles'),
+        meta: { title: '批量文件上传', icon: 'el-icon-upload' }
       }
     ]
   },
