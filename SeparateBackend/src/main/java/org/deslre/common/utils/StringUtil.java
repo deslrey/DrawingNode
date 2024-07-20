@@ -11,7 +11,7 @@ public class StringUtil {
         return clazz == null;
     }
 
-    public static <T> boolean isEmpty(final T clazz) {
+    public static boolean isEmpty(final Object clazz) {
         return clazz == null;
     }
 

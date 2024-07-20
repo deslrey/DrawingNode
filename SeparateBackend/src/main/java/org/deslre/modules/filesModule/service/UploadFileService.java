@@ -1,10 +1,8 @@
 package org.deslre.modules.filesModule.service;
 
-import org.deslre.common.result.ResultCodeEnum;
 import org.deslre.common.result.Results;
 import org.deslre.common.utils.FileUtils;
 import org.deslre.common.utils.StringUtil;
-import org.deslre.modules.filesModule.entity.PageEntity;
 import org.deslre.modules.filesModule.entity.UploadFile;
 import org.deslre.modules.filesModule.repository.UploadFileRepository;
 import org.springframework.data.domain.Page;
@@ -15,9 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,18 +26,26 @@ public class UploadFileService {
         if (page == 0)
             page = 1;
         Pageable pageable = PageRequest.of(page - 1, size); // 页码从0开始
-        Page<UploadFile> uploadFilePage = uploadFileRepository.findByFileNameContaining(fileName, pageable);
+        Page<UploadFile> uploadFilePage = uploadFileRepository.findByFileNameContainingAndExitsIsTrue(fileName, pageable);
         return Results.ok(uploadFilePage);
     }
 
 
-    public void deleteFile(Integer id) {
-        Optional<UploadFile> optionalFile = uploadFileRepository.findById(id);
+    public Results<Void> deleteFile(UploadFile uploadFile) {
+        if (StringUtil.isEmpty(uploadFile) || StringUtil.isEmpty(uploadFile.getId())) {
+            return Results.fail("数据异常");
+        }
+        Optional<UploadFile> optionalFile = uploadFileRepository.findByIdAndExitsIsTrue(uploadFile.getId());
         if (optionalFile.isPresent()) {
             UploadFile file = optionalFile.get();
-            FileUtils.deleteFile(path + File.separator + file.getRelativePath());
-            uploadFileRepository.delete(file);
+//            FileUtils.deleteFile(path + File.separator + file.getRelativePath());
+            uploadFileRepository.softDeleteById(file.getId());
+            return Results.ok("删除成功");
+        } else {
+            return Results.fail("数据不存在,删除失败");
         }
+
+
     }
 
     private static final String path = "E:\\list";
@@ -51,12 +54,14 @@ public class UploadFileService {
         if (file == null || file.isEmpty()) {
             return Results.fail("文件为空");
         }
-        fileName = Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf("."));
+        if (StringUtil.isEmpty(fileName))
+            fileName = Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf("."));
         try {
             String uploaded = FileUtils.upload(file, path, fileName);
             UploadFile uploadFile = new UploadFile();
             uploadFile.setFileName(fileName);
             uploadFile.setRelativePath(uploaded);
+            uploadFile.setExits(true);
             uploadFileRepository.save(uploadFile);
 
             return Results.ok("文件上传成功");

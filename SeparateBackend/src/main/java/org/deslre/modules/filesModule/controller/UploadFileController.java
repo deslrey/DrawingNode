@@ -1,24 +1,14 @@
 package org.deslre.modules.filesModule.controller;
 
-import org.deslre.common.result.ResultCodeEnum;
 import org.deslre.common.result.Results;
 import org.deslre.common.utils.StringUtil;
-import org.deslre.modules.filesModule.entity.PageEntity;
 import org.deslre.modules.filesModule.entity.UploadFile;
 import org.deslre.modules.filesModule.service.UploadFileService;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @CrossOrigin
 @RestController
@@ -43,15 +33,15 @@ public class UploadFileController {
         }
     }
 
-
     /**
      * 删除
      */
     @PostMapping("/delete")
-    public Results<Void> deleteFile(@RequestBody Map<String, Long> request) {
-        Integer id = Math.toIntExact(request.get("id"));
-        uploadFileService.deleteFile(id);
-        return Results.ok();
+    public Results<Void> deleteFile(@RequestBody UploadFile uploadFile) {
+        if (StringUtil.isEmpty(uploadFile) || StringUtil.isEmpty(uploadFile.getId())) {
+            Results.fail("数据异常");
+        }
+        return uploadFileService.deleteFile(uploadFile);
     }
 
     private static final String pathFile = "E:\\list\\";
