@@ -8,13 +8,18 @@
                 <div class="filter-container">
                     <el-input placeholder="文件名称" v-model="pagination.fileName" style="width: 200px;"
                         class="filter-item"></el-input>
-                    <el-button @click="getAll()" class="dalfBut">查询</el-button>
-                    <el-button type="primary" class="butT" @click="handleCreate()">新建</el-button>
+                    <el-button type="primary" @click="getAll()" class="dalfBut">查询</el-button>
+                    <el-button type="warning" class="butT" @click="handleCreate()">新增</el-button>
                 </div>
 
                 <el-table size="small" current-row-key="id" :data="dataList" stripe highlight-current-row>
                     <el-table-column type="index" align="center" label="序号"></el-table-column>
                     <el-table-column prop="fileName" label="文件名称" align="center"></el-table-column>
+                    <el-table-column prop="createTime" label="创建时间" align="center">
+                        <template slot-scope="scope">
+                            {{ formatDate(scope.row.createTime) }}
+                        </template>
+                    </el-table-column>
                     <el-table-column label="操作" align="center">
                         <template slot-scope="scope">
                             <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
@@ -89,6 +94,8 @@
 <script>
 import axios from 'axios';
 import batchFiles from '@/api/file/batchFiles';
+import moment from 'moment'
+
 
 export default {
     name: 'BatchFiles',
@@ -152,6 +159,9 @@ export default {
         httpRequest(option) {
             this.fileList.push(option)
         },
+        formatDate(date) {
+            return moment(date).format('YYYY-MM-DD HH:mm:ss');
+        },
 
         // 上传前处理
         beforeUpload(file) {
@@ -178,7 +188,6 @@ export default {
             });
             // 将输入表单数据添加到params表单中
             params.append('fileName', this.importForm.fileName)
-
             //这里根据自己封装的axios来进行调用后端接口
             console.log('params -----> ', params);
             batchFiles.submitImportForm(params).then(response => {
@@ -195,29 +204,6 @@ export default {
                 this.getAll()
             })
         },
-        handleAdd() {
-            this.$refs.dataAddForm.validate((valid) => {
-                console.log('valid ------> ', valid);
-                if (valid) {
-                    const formData = new FormData();
-                    formData.append('fileName', this.formData.fileName);
-                    if (this.fileList.length > 0) {
-                        formData.append('file', this.fileList[0].raw);
-                    }
-
-                    batchFiles.handleAdd(formData).then(response => {
-                        console.log('handleAdd ------ > ', response);
-                        this.$message.success('文件上传成功');
-                        this.dialogFormVisible = false;
-                    })
-
-
-                } else {
-                    console.log('表单验证失败');
-                    return false;
-                }
-            });
-        },
 
         cancel() {
             this.dialogFormVisible = false;
@@ -225,20 +211,31 @@ export default {
             this.$message.info("当前操作取消!!!");
         },
         handleDelete(row) {
+            console.log('row1 ------ > ', row);
             this.$confirm("此操作永久删除当前信息，是否继续？", "提示", { type: "info" }).then(() => {
-                axios.delete(`/books/${row.id}`).then(res => {
-                    if (res.data.flag) {
-                        this.$message.success("删除成功!!!");
-                    } else {
-                        this.$message.error("数据同步失败，自动刷新!!!");
-                    }
+                batchFiles.handleDelete(row).then(response => {
+                    console.log('handleDelete ------ > ', response);
+                }).catch(error => {
+                    console.log('error ------ > ', error);
                 }).finally(() => {
                     this.getAll();
                 });
+
             }).catch(() => {
                 this.$message.info("取消操作!!!");
             });
+
         },
+
+        // axios.delete(`/books/${row.id}`).then(res => {
+        //     if (res.data.flag) {
+        //         this.$message.success("删除成功!!!");
+        //     } else {
+        //         this.$message.error("数据同步失败，自动刷新!!!");
+        //     }
+        // }).finally(() => {
+        //     this.getAll();
+        // });
         handleUpdate(row) {
             axios.get(`/books/${row.id}`).then(res => {
                 if (res.data.flag && res.data.data != null) {
@@ -1168,7 +1165,7 @@ label input[type="radio"]:checked {
 
     position: relative;
 
-    padding: 15px 15px 0 15px;
+    padding: 5px 15px 0 15px;
 
     /* margin-top: 70px; */
 
@@ -1226,7 +1223,7 @@ label input[type="radio"]:checked {
 
     background: #fff;
 
-    margin: 15px 30px 15px 15px;
+    margin: 10px 20px 15px 15px;
 
 
 }

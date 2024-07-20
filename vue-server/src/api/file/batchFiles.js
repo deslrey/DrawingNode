@@ -20,8 +20,7 @@ export default {
             }
         })
     },
-
-    handleAdd(formData) {
+    submitImportForm(formData) {
         return request({
             url: '/uploadFile/upload',
             method: 'post',
@@ -32,14 +31,14 @@ export default {
         })
     },
 
-    submitImportForm(formData) {
+    handleDelete(data) {
         return request({
-            url: '/uploadFile/upload',
+            url: '/uploadFile/delete',
             method: 'post',
-            data: formData,
             headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+                'Content-Type': 'application/json'
+            },
+            data: data, // 确保数据被序列化为 JSON
         })
     }
 
