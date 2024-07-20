@@ -50,11 +50,11 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="24">
-                                    <el-form-item label="上传文件:" prop="excel">
+                                    <el-form-item label="上传文件:">
                                         <el-upload class="upload-demo" ref="upload" action :http-request="httpRequest"
                                             :before-upload="beforeUpload" :on-exceed="handleExceed" :limit="1">
                                             <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                                            <div slot="tip" class="el-upload__tip">只能上传.xlsx文件，且不超过5M</div>
+                                            <div slot="tip" class="el-upload__tip">只能上传.xlsx文件且不超过5M</div>
                                         </el-upload>
                                     </el-form-item>
                                 </el-col>
@@ -195,6 +195,7 @@ export default {
                 // this.$refs.importFormRef.resetFields()//清除表单信息
                 // this.$refs.upload.clearFiles()//清空上传列表
                 this.fileList = []//集合清空
+                this.$refs.upload.clearFiles();  //清空上传的文件缓存
                 this.dialogFormVisible = false//关闭对话框
                 console.log('submitImportForm -----> ', response);
                 this.$message({
