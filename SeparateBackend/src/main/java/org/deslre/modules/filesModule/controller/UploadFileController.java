@@ -1,5 +1,9 @@
 package org.deslre.modules.filesModule.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.deslre.common.result.Results;
 import org.deslre.common.utils.StringUtil;
 import org.deslre.modules.filesModule.entity.UploadFile;
@@ -55,5 +59,22 @@ public class UploadFileController {
             Results.fail("文件为空");
         }
         return uploadFileService.uploadFile(file, fileName);
+    }
+
+    @GetMapping("/update/{id}")
+    public Results<UploadFile> updateFile(@PathVariable Integer id) {
+        if (StringUtil.isEmpty(id)) {
+            return Results.fail("数据异常");
+        }
+        return uploadFileService.updateFile(id);
+    }
+
+    @PostMapping("/update")
+    public Results<UploadFile> updateFile(MultipartFile file, @RequestPart("uploadFile") String uploadFileString) {
+        if (StringUtil.isEmpty(uploadFileString)) {
+            return Results.fail("文件名或者文件不能为空");
+        }
+
+        return uploadFileService.updateFile(file, uploadFileString);
     }
 }

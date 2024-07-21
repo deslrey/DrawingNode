@@ -1,6 +1,5 @@
 package org.deslre;
 
-import org.deslre.common.utils.StringUtil;
 import org.deslre.modules.filesModule.entity.UploadFile;
 import org.deslre.modules.filesModule.repository.UploadFileRepository;
 import org.deslre.modules.loginModule.entity.User;
@@ -11,9 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 class SeparateBackendApplicationTests {
@@ -52,8 +49,8 @@ class SeparateBackendApplicationTests {
     @Test
     void a() {
 
-//        UploadFile uploadFile = uploadFileRepository.findByIdAndExitsIsTrue(49).get();
-//        System.out.println("uploadFile = " + uploadFile);
+        List<UploadFile> fileList = uploadFileRepository.findAll();
+        System.out.println("fileList = " + fileList);
     }
 
 }

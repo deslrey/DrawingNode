@@ -1,5 +1,8 @@
 package org.deslre.modules.filesModule.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.deslre.common.result.Results;
 import org.deslre.common.utils.FileUtils;
 import org.deslre.common.utils.StringUtil;
@@ -73,5 +76,39 @@ public class UploadFileService {
 
     }
 
+    public Results<UploadFile> updateFile(Integer id) {
+        if (StringUtil.isEmpty(id)) {
+            return Results.fail("数据异常");
+        }
+        Optional<UploadFile> optional = uploadFileRepository.findByIdAndExitsIsTrue(id);
+        return optional.map(Results::ok).orElseGet(() -> Results.fail("数据不存在"));
+    }
+
+    public Results<UploadFile> updateFile(MultipartFile file, String uploadFileString) {
+        if (StringUtil.isEmpty(uploadFileString)) {
+            return Results.fail("文件名或者文件不能为空");
+        }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // 注册 JavaTimeModule
+            UploadFile uploadFile = objectMapper.readValue(uploadFileString, UploadFile.class);
+            String fileName;
+            if (!StringUtil.isEmpty(file)) {
+                fileName = Objects.requireNonNull(file.getOriginalFilename()).substring(0, file.getOriginalFilename().lastIndexOf("."));
+                fileName = FileUtils.upload(file, path, fileName);
+                FileUtils.deleteFile(path + File.separator + uploadFile.getRelativePath());
+                uploadFile.setRelativePath(fileName);
+            }
+            FileUtils.deleteFile(path + File.separator + uploadFile.getRelativePath());
+            uploadFile.setCreateTime(null);
+            uploadFile.setUpdateTime(null);
+            uploadFileRepository.save(uploadFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Results.fail("更新失败");
+        }
+        return Results.ok("更新成功");
+
+    }
 }
 

@@ -64,12 +64,6 @@ export const constantRoutes = [
     meta: { title: '文件上传', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'uploadFiles',
-        name: 'UploadFiles',
-        component: () => import('@/views/file/uploadFiles'),
-        meta: { title: '单个文件文件', icon: 'el-icon-upload' }
-      },
-      {
         path: 'batchFiles',
         name: 'BatchFiles',
         component: () => import('@/views/file/batchFiles'),

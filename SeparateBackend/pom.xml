@@ -107,6 +107,12 @@
             <version>2.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.15.2</version> <!-- 请检查是否有更新版本 -->
+        </dependency>
+
 
     </dependencies>
 

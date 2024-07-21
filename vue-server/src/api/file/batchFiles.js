@@ -38,9 +38,26 @@ export default {
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: data, // 确保数据被序列化为 JSON
+            data: data,
+        })
+    },
+
+    handleUpdate(id) {
+        return request({
+            url: `/uploadFile/update/${id}`,
+            method: 'get',
+        })
+    },
+
+    handleEdit(formData) {
+        return request({
+            url: '/uploadFile/update',
+            method: 'post',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            data: formData,
         })
     }
-
 
 }

@@ -72,17 +72,30 @@
                     <el-dialog title="编辑检查项" :visible.sync="dialogFormVisible4Edit">
                         <el-form ref="dataEditForm" :model="formData" :rules="rules" label-position="right"
                             label-width="100px">
+
                             <el-row>
                                 <el-col :span="12">
-                                    <el-form-item label="文件" prop="fileName">
-                                        <el-input v-model="formData.fileName" />
+                                    <el-form-item label="文件名" prop="fileName">
+                                        <el-input v-model="formData.fileName" placeholder="不输入名称采用默认文件名" />
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <el-row>
+                                <el-col :span="24">
+                                    <el-form-item label="上传文件:">
+                                        <el-upload class="upload-demo" ref="upload" action :http-request="httpRequest"
+                                            :before-upload="beforeUpload" :on-exceed="handleExceed" :limit="1">
+                                            <el-button slot="trigger" size="small" type="primary">选取新文件</el-button>
+                                            <div slot="tip" class="el-upload__tip">只能上传.xlsx文件且不超过5M</div>
+                                        </el-upload>
                                     </el-form-item>
                                 </el-col>
                             </el-row>
                         </el-form>
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="cancel()">取消</el-button>
-                            <el-button type="primary" @click="handleEdit()">确定</el-button>
+                            <el-button type="primary" @click="handleEdit">确定</el-button>
                         </div>
                     </el-dialog>
                 </div>
@@ -134,11 +147,7 @@ export default {
                 currentPage: this.pagination.currentPage,
                 pageSize: this.pagination.pageSize
             };
-            console.log('params ------> ', params);
             batchFiles.getAll(params).then(response => {
-
-                console.log('getAll ------> ', response);
-
                 this.pagination.pageSize = response.data.size;
                 this.pagination.currentPage = response.data.totalPages;
                 this.pagination.total = response.data.totalElements;
@@ -188,15 +197,13 @@ export default {
             });
             // 将输入表单数据添加到params表单中
             params.append('fileName', this.importForm.fileName)
-            //这里根据自己封装的axios来进行调用后端接口
-            console.log('params -----> ', params);
             batchFiles.submitImportForm(params).then(response => {
                 console.log('submitImportForm -----> ', response);
-                // this.$refs.importFormRef.resetFields()//清除表单信息
-                // this.$refs.upload.clearFiles()//清空上传列表
+                this.$refs.dataAddForm.resetFields()//清除表单信息
                 this.fileList = []//集合清空
                 this.$refs.upload.clearFiles();  //清空上传的文件缓存
                 this.dialogFormVisible = false//关闭对话框
+                this.importForm.fileName = ''
                 console.log('submitImportForm -----> ', response);
                 this.$message({
                     message: response.message,
@@ -216,8 +223,10 @@ export default {
             this.$confirm("此操作永久删除当前信息，是否继续？", "提示", { type: "info" }).then(() => {
                 batchFiles.handleDelete(row).then(response => {
                     console.log('handleDelete ------ > ', response);
+                    this.$message.success("删除成功!!!");
                 }).catch(error => {
                     console.log('error ------ > ', error);
+                    this.$message.error("数据同步失败，自动刷新!!!");
                 }).finally(() => {
                     this.getAll();
                 });
@@ -227,37 +236,47 @@ export default {
             });
 
         },
-
-        // axios.delete(`/books/${row.id}`).then(res => {
-        //     if (res.data.flag) {
-        //         this.$message.success("删除成功!!!");
-        //     } else {
-        //         this.$message.error("数据同步失败，自动刷新!!!");
-        //     }
-        // }).finally(() => {
-        //     this.getAll();
-        // });
         handleUpdate(row) {
-            axios.get(`/books/${row.id}`).then(res => {
-                if (res.data.flag && res.data.data != null) {
-                    this.dialogFormVisible4Edit = true;
-                    this.formData = res.data.data;
-                } else {
-                    this.$message.error("数据同步失败，自动刷新!!!");
-                }
+            console.log('handleUpdate ------ > ', row);
+            batchFiles.handleUpdate(row.id).then(response => {
+                this.dialogFormVisible4Edit = true;
+                this.formData = response.data;
+                console.log('formData ------ > ', this.formData);
             }).finally(() => {
                 this.getAll();
             });
         },
         handleEdit() {
-            axios.put("/books", this.formData).then(res => {
-                if (res.data.flag) {
-                    this.dialogFormVisible4Edit = false;
-                    this.$message.success("修改成功!!!");
-                } else {
-                    this.$message.error("修改失败!!!");
-                }
+            // 使用form表单的数据格式
+            const params = new FormData()
+            // 将上传文件数组依次添加到参数paramsData中
+            this.fileList.forEach((x) => {
+                params.append('file', x.file)
+            });
+            console.log('异常 -----> ');
+            console.log('异常 -----> ', this.formData);
+            // 将输入表单数据添加到params表单中
+            // 将输入表单数据添加到 params 表单中
+            params.append('uploadFile', JSON.stringify(this.formData));
+
+            // 打印 FormData 内容以确保正确
+            for (let pair of params.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            }
+
+            //这里根据自己封装的axios来进行调用后端接口
+            batchFiles.handleEdit(params).then(response => {
+                this.$refs.dataEditForm.resetFields()//清除表单信息
+                this.fileList = []//集合清空
+                this.$refs.upload.clearFiles();  //清空上传的文件缓存
+                this.dialogFormVisible4Edit = false;//关闭对话框
+                this.importForm.fileName = ''
+                this.$message({
+                    message: response.message,
+                    type: 'success'
+                })
             }).finally(() => {
+                console.log('异常 -----> ');
                 this.getAll();
             });
         }

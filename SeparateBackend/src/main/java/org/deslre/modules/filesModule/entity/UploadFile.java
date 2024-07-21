@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,10 +30,10 @@ public class UploadFile {
     private String relativePath;
 
     @Column(name = "create_time", updatable = false)
-    private Instant createTime;
+    private LocalDateTime createTime;
 
-    @Column(name = "update_time")
-    private Instant updateTime;
+    @Column(name = "update_time", updatable = false)
+    private LocalDateTime updateTime;
 
     @Column(name = "exits")
     private Boolean exits;
